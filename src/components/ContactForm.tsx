@@ -20,7 +20,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import emailjs from '@emailjs/browser';
-import { TARGET_EMAIL, EMAILJS_CONFIG } from "@/config/email.ts";
+import { TARGET_EMAIL, EMAILJS_CONFIG, EMAIL_TEMPLATES } from "@/config/email";
 
 // Define the form schema with Zod
 const formSchema = z.object({
@@ -64,7 +64,7 @@ const ContactForm: React.FC = () => {
     setIsLoading(true);
     
     try {
-      // Prepare template parameters for EmailJS
+      // Prepare template parameters for main email to company
       const templateParams = {
         from_name: values.name,
         from_email: values.email,
@@ -75,7 +75,7 @@ const ContactForm: React.FC = () => {
         consent_timestamp: new Date().toISOString(),
       };
       
-      // Send email using EmailJS
+      // Send email to company using EmailJS
       const response = await emailjs.send(
         EMAILJS_CONFIG.SERVICE_ID,
         EMAILJS_CONFIG.TEMPLATE_ID,
@@ -84,7 +84,23 @@ const ContactForm: React.FC = () => {
       );
       
       if (response.status === 200) {
-        toast({
+        // Send confirmation email to the user
+        const confirmationParams = {
+          to_name: values.name,
+          to_email: values.email,
+          subject: EMAIL_TEMPLATES.confirmation.subject,
+          message: EMAIL_TEMPLATES.confirmation.body,
+          from_name: "Me & My Dubai",
+          reply_to: TARGET_EMAIL,
+        };
+        
+        await emailjs.send(
+          EMAILJS_CONFIG.SERVICE_ID,
+          EMAILJS_CONFIG.TEMPLATE_ID_CONFIRMATION,
+          confirmationParams,
+          EMAILJS_CONFIG.PUBLIC_KEY
+        );
+	toast({
           title: translate("Message Sent!"),
           description: translate("Thank you for your inquiry. We'll get back to you soon."),
         });
