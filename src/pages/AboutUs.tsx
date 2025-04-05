@@ -44,7 +44,7 @@ const AboutUs = () => {
               <div className="md:w-1/2">
                 <div className="rounded-lg overflow-hidden h-full">
                   <img 
-                    src="https://i.ytimg.com/vi/GVCR0uZLIkU/maxresdefault.jpg" 
+                    src="https://cloudfront-eu-central-1.images.arcpublishing.com/thenational/PQD4YM5BJZGGNLUDDWUEJWO24Y.gif" 
                     alt="Dubai Skyline" 
                     className="w-full h-full object-cover"
                   />
