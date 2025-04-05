@@ -90,7 +90,7 @@ const ContactForm: React.FC = () => {
           to_email: values.email,
           subject: EMAIL_TEMPLATES.confirmation.subject,
           message: EMAIL_TEMPLATES.confirmation.body,
-          from_name: "MeMyDubai",
+          from_name: "Me & My Dubai",
           reply_to: TARGET_EMAIL,
         };
         
