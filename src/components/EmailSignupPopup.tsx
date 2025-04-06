@@ -59,7 +59,12 @@ const EmailSignupPopup = () => {
     setIsSubmitting(true);
     
     try {
-      // Send email notification to company about new subscriber
+      // Initialize EmailJS if not done globally
+      if (!emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY)) {
+        emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
+      }
+
+     // Send email notification to company about new subscriber
       const templateParams = {
         from_name: "Website Newsletter Subscription",
         from_email: email,

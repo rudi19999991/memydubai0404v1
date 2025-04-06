@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -69,6 +69,11 @@ const ContactForm: React.FC = () => {
     setIsLoading(true);
     
     try {
+    // Initialize EmailJS if not done globally
+      if (!emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY)) {
+        emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
+      }
+
       // Prepare template parameters for main email to company
       const templateParams = {
         from_name: values.name,
@@ -84,8 +89,7 @@ const ContactForm: React.FC = () => {
       const response = await emailjs.send(
         EMAILJS_CONFIG.SERVICE_ID,
         EMAILJS_CONFIG.TEMPLATE_ID,
-        templateParams,
-        EMAILJS_CONFIG.PUBLIC_KEY
+        templateParams
       );
       
       if (response.status === 200) {
@@ -102,8 +106,7 @@ const ContactForm: React.FC = () => {
         await emailjs.send(
           EMAILJS_CONFIG.SERVICE_ID,
           EMAILJS_CONFIG.TEMPLATE_ID_CONFIRMATION,
-          confirmationParams,
-          EMAILJS_CONFIG.PUBLIC_KEY
+          confirmationParams
         );
 	toast({
           title: translate("Message Sent!"),
