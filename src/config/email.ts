@@ -7,7 +7,7 @@ export const EMAILJS_CONFIG = {
   TEMPLATE_ID: "template_q3ka9op", // Replace with your actual EmailJS Template ID
   TEMPLATE_ID_NEWSLETTER: "template_q3ka9op", // Template for newsletter subscriptions
   TEMPLATE_ID_CONFIRMATION: "template_6u4y5re", // Template for confirmation emails
-  PUBLIC_KEY: "rORYyxd9CQA56h8_n", // Replace with your actual EmailJS Public Key
+  PUBLIC_KEY: "service_gtf49bu", // Replace with your actual EmailJS Public Key
 };
 
 // Email content templates
