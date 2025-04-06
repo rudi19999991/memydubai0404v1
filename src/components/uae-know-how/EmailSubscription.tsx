@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Mail, CheckCircle2, Lock, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
