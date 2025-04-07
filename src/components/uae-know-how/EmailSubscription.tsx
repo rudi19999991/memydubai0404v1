@@ -38,11 +38,7 @@ const EmailSubscription = () => {
     setIsSubmitting(true);
     
     try {
-     // Initialize EmailJS if not done globally
-      if (!emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY)) {
-        emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
-      }
-
+     
       // Send email notification to company about new subscriber
       const templateParams = {
         from_name: "UAE Know-How Newsletter Subscription",
