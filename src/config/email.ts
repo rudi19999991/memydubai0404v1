@@ -4,9 +4,9 @@ export const TARGET_EMAIL = "info@memydubai.com";
 // EmailJS configuration
 export const EMAILJS_CONFIG = {
   SERVICE_ID: "service_z7j9tk4", // Replace with your actual EmailJS Service ID
-  TEMPLATE_ID: "template_q3ka9op", // Replace with your actual EmailJS Template ID
-  TEMPLATE_ID_NEWSLETTER: "newsletter_subscription", // Template for newsletter subscriptions
-  TEMPLATE_ID_CONFIRMATION: "newsletter_confirmation", // Template for confirmation emails
+  TEMPLATE_ID: "newsletter_subscription_notification", // Replace with your actual EmailJS Template ID
+  TEMPLATE_ID_NEWSLETTER: "newsletter_subscription_notification", // Template for newsletter subscriptions
+  TEMPLATE_ID_CONFIRMATION: "newsletter_confirmation_email", // Template for confirmation emails
   PUBLIC_KEY: "pzAzZglXoT0smJ0Bu", // Replace with your actual EmailJS Public Key
 };
 
