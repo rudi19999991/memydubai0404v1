@@ -28,6 +28,7 @@ const EmailSignupPopup = () => {
   // Initialize EmailJS when component mounts
   useEffect(() => {
     emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
+    console.log("EmailJS initialized with:", EMAILJS_CONFIG.PUBLIC_KEY);
   }, []);
 
   // Show popup after a short delay when component mounts
@@ -59,9 +60,8 @@ const EmailSignupPopup = () => {
     setIsSubmitting(true);
     
     try {
-      // Initialize EmailJS if not done globally
-      if (!emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY)) {
-        emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
+           console.log("Sending email with service ID:", EMAILJS_CONFIG.SERVICE_ID);
+
       }
 
      // Send email notification to company about new subscriber
@@ -79,7 +79,9 @@ const EmailSignupPopup = () => {
         EMAILJS_CONFIG.TEMPLATE_ID_NEWSLETTER,
         templateParams
       );
-      
+
+      console.log("Email response:", response);
+
       if (response.status === 200) {
         // Send confirmation email to subscriber
         const confirmationParams = {

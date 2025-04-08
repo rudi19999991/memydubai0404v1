@@ -21,6 +21,7 @@ const EmailSubscription = () => {
   // Initialize EmailJS when component mounts
   useEffect(() => {
     emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
+    console.log("EmailJS initialized in UAE Know-How with:", EMAILJS_CONFIG.PUBLIC_KEY);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -38,7 +39,8 @@ const EmailSubscription = () => {
     setIsSubmitting(true);
     
     try {
-     
+           console.log("Sending email with service ID in UAE Know-How:", EMAILJS_CONFIG.SERVICE_ID);
+
       // Send email notification to company about new subscriber
       const templateParams = {
         from_name: "UAE Know-How Newsletter Subscription",
@@ -54,7 +56,9 @@ const EmailSubscription = () => {
         EMAILJS_CONFIG.TEMPLATE_ID_NEWSLETTER,
         templateParams
       );
-      
+
+            console.log("UAE Know-How email response:", response);
+
       if (response.status === 200) {
         // Send confirmation email to subscriber
         const confirmationParams = {
@@ -62,7 +66,7 @@ const EmailSubscription = () => {
           to_email: email,
           subject: EMAIL_TEMPLATES.newsletterConfirmation.subject,
           message: EMAIL_TEMPLATES.newsletterConfirmation.body,
-          from_name: "Me & My Dubai",
+          from_name: "MeMyDubai",
           reply_to: TARGET_EMAIL,
         };
         
