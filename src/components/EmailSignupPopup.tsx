@@ -25,10 +25,10 @@ const EmailSignupPopup = () => {
   const [consentGiven, setConsentGiven] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  // Initialize EmailJS with public key
+  // Initialize EmailJS when component mounts
   useEffect(() => {
     emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
-    console.log("EmailJS initialized with:", EMAILJS_CONFIG.PUBLIC_KEY);
+
   }, []);
 
   // Show popup after a short delay when component mounts
@@ -60,19 +60,20 @@ const EmailSignupPopup = () => {
     setIsSubmitting(true);
     
     try {
-      console.log("Sending email with service ID:", EMAILJS_CONFIG.SERVICE_ID);
-      // Send email notification to company about new subscriber
+      // Initialize EmailJS if not done globally
+      if (!emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY)) {
+        emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
+      }
+
+     // Send email notification to company about new subscriber
       const templateParams = {
         from_name: "Website Newsletter Subscription",
         from_email: email,
-        to_name: "Me & My Dubai Team", // Added recipient name
-        to_email: TARGET_EMAIL, // Make sure this is not empty
         subject: "New Newsletter Subscription",
         message: `New subscriber with email: ${email}`,
+        to_email: TARGET_EMAIL,
         subscription_date: new Date().toISOString(),
       };
-      
-      console.log("Newsletter template params:", templateParams);
       
       const response = await emailjs.send(
         EMAILJS_CONFIG.SERVICE_ID,
@@ -80,21 +81,16 @@ const EmailSignupPopup = () => {
         templateParams
       );
       
-      console.log("Email response:", response);
-      
       if (response.status === 200) {
         // Send confirmation email to subscriber
         const confirmationParams = {
           to_name: "Valued Subscriber", // Generic name as we only have email
           to_email: email,
-          from_name: "Me & My Dubai",
-          from_email: TARGET_EMAIL, // Added sender email
-          reply_to: TARGET_EMAIL,
           subject: EMAIL_TEMPLATES.newsletterConfirmation.subject,
           message: EMAIL_TEMPLATES.newsletterConfirmation.body,
+          from_name: "Me & My Dubai",
+          reply_to: TARGET_EMAIL,
         };
-        
-        console.log("Confirmation template params:", confirmationParams);
         
         await emailjs.send(
           EMAILJS_CONFIG.SERVICE_ID,
@@ -136,7 +132,92 @@ const EmailSignupPopup = () => {
   };
 
   return (
-    // ... keep existing code (Dialog and form rendering)
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-xl font-bold flex items-center gap-2">
+            <Mail className="h-5 w-5 text-luxury-gold" />
+            {translate("Dubai Market Insights")}
+          </DialogTitle>
+          <DialogDescription>
+            {translate("Subscribe to receive the latest market trends and investment opportunities.")}
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="mt-4">
+          {!isSuccess ? (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="email" className="text-sm font-medium">
+                  {translate("Email Address")}
+                </label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your.email@example.com"
+                  required
+                  className="border-luxury-gold/30 focus-visible:ring-luxury-gold"
+                />
+              </div>
+              
+              <div className="flex items-start space-x-2">
+                <Checkbox 
+                  id="terms" 
+                  checked={consentGiven}
+                  onCheckedChange={(checked) => setConsentGiven(checked === true)}
+                  className="data-[state=checked]:bg-luxury-gold data-[state=checked]:border-luxury-gold"
+                />
+                <div className="grid gap-1 leading-none">
+                  <label
+                    htmlFor="terms"
+                    className="text-xs text-gray-600 font-medium"
+                  >
+                    {translate("I agree to receive email marketing communications and understand I can unsubscribe at any time.")}
+                  </label>
+                </div>
+              </div>
+              
+              <div className="text-xs text-gray-500">
+                {translate("By subscribing, you agree to our")} 
+                <Link to="/privacy-policy" className="underline ml-1 hover:text-luxury-gold">
+                  {translate("Privacy Policy")}
+                </Link>.
+              </div>
+              
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleClose}
+                >
+                  {translate("Maybe Later")}
+                </Button>
+                <Button 
+                  type="submit" 
+                  className="bg-luxury-gold hover:bg-luxury-gold/90 text-white"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "..." : translate("Subscribe")} <ChevronRight className="ml-1 h-4 w-4" />
+                </Button>
+              </div>
+            </form>
+          ) : (
+            <div className="py-4 text-center">
+              <CheckCircle2 className="h-12 w-12 text-green-500 mx-auto mb-4" />
+              <h3 className="text-lg font-bold mb-2">{translate("Subscription Confirmed!")}</h3>
+              <p className="text-gray-600 mb-4">
+                {translate("Thank you for subscribing to our Dubai Market Insights newsletter.")}
+              </p>
+              <Button onClick={handleClose} className="bg-luxury-gold hover:bg-luxury-gold/90 text-white">
+                {translate("Continue to Website")}
+              </Button>
+            </div>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
