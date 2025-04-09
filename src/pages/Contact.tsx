@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ContactForm from "@/components/ContactForm";
-import { Phone, Mail, MapPin, Linkedin, Instagram, Twitter, Youtube, MessageCircle, Calendar, Building, InfoIcon, Users } from "lucide-react";
+import { Phone, Mail, MapPin, Linkedin, Instagram, Twitter, Youtube, MessageCircle, WhatsApp, Calendar, Building, InfoIcon, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import HeroSection from "@/components/HeroSection";
 import { useLanguage } from "@/contexts/LanguageContext";
 import EnhancedContactForm from "@/components/EnhancedContactForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 const Contact = () => {
   const { translate } = useLanguage();
@@ -287,6 +288,11 @@ const Contact = () => {
       </main>
       
       <Footer />
+<WhatsAppButton 
+        phoneNumber="+4915560882539" 
+	label="Contact MeMy Dubai"
+        variant="fixed" 
+      />
     </div>
   );
 };

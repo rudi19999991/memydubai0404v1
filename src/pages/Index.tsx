@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import CurrencySelector from "@/components/CurrencySelector";
 import EmailSignupPopup from "@/components/EmailSignupPopup";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 const Index = () => {
   const { translate } = useLanguage();
@@ -213,6 +214,11 @@ const Index = () => {
       </main>
       
       <Footer />
+<WhatsAppButton 
+        phoneNumber="+4915560882539" 
+	label="Contact MeMy Dubai"
+        variant="fixed" 
+      />
     </div>
   );
 };
