@@ -42,14 +42,14 @@ const EmailSubscription = () => {
            console.log("Sending email with service ID in UAE Know-How:", EMAILJS_CONFIG.SERVICE_ID);
 
       // Send email notification to company about new subscriber
-      const templateParams = {
-        from_name: "UAE Know-How Newsletter Subscription",
-        from_email: email,
-        subject: "New UAE Know-How Newsletter Subscription",
-        message: `New subscriber with email: ${email} from the UAE Know-How page.`,
-        to_email: TARGET_EMAIL,
-        subscription_date: new Date().toISOString(),
-      };
+     const templateParams = {
+  from_name: "Website Newsletter Subscription", // ✅ Name of your form
+  from_email: email,                             // ✅ Subscriber email address
+  to_name: "Me & My Dubai Team",                  // ✅ Who the email is for
+  to_email: TARGET_EMAIL,                         // ✅ Where the email is sent
+  subject: "New Newsletter Subscription",         // ✅ Email subject
+  message: `New subscriber with email: ${email}`,  // ✅ Body content
+};
       
       const response = await emailjs.send(
         EMAILJS_CONFIG.SERVICE_ID,
@@ -62,14 +62,14 @@ const EmailSubscription = () => {
       if (response.status === 200) {
         // Send confirmation email to subscriber
         const confirmationParams = {
-          to_name: "Valued Subscriber", // Generic name as we only have email
-          to_email: email,
-          subject: EMAIL_TEMPLATES.newsletterConfirmation.subject,
-          message: EMAIL_TEMPLATES.newsletterConfirmation.body,
-          from_name: "MeMyDubai",
-  	  from_email: TARGET_EMAIL, // ← add this
-          reply_to: TARGET_EMAIL,
-        };
+          to_name: "Valued Subscriber",
+  to_email: email,
+  from_name: "Me & My Dubai",
+  from_email: TARGET_EMAIL,
+  reply_to: TARGET_EMAIL,
+  subject: EMAIL_TEMPLATES.newsletterConfirmation.subject,
+  message: EMAIL_TEMPLATES.newsletterConfirmation.body,
+};
         
         await emailjs.send(
           EMAILJS_CONFIG.SERVICE_ID,
