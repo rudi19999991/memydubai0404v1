@@ -67,12 +67,8 @@ const EmailSignupPopup = () => {
 
      // Send email notification to company about new subscriber
       const templateParams = {
-        from_name: "Website Newsletter Subscription",
         from_email: email,
-        subject: "New Newsletter Subscription",
-        message: `New subscriber with email: ${email}`,
-        to_email: TARGET_EMAIL,
-        subscription_date: new Date().toISOString(),
+  subscription_date: new Date().toISOString(),
       };
       
       const response = await emailjs.send(
@@ -89,6 +85,7 @@ const EmailSignupPopup = () => {
           subject: EMAIL_TEMPLATES.newsletterConfirmation.subject,
           message: EMAIL_TEMPLATES.newsletterConfirmation.body,
           from_name: "Me & My Dubai",
+          from_email: TARGET_EMAIL, // ← add this
           reply_to: TARGET_EMAIL,
         };
         

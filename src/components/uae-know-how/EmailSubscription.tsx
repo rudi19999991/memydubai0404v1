@@ -67,6 +67,7 @@ const EmailSubscription = () => {
           subject: EMAIL_TEMPLATES.newsletterConfirmation.subject,
           message: EMAIL_TEMPLATES.newsletterConfirmation.body,
           from_name: "MeMyDubai",
+  	  from_email: TARGET_EMAIL, // ← add this
           reply_to: TARGET_EMAIL,
         };
         
@@ -88,7 +89,7 @@ const EmailSubscription = () => {
         throw new Error("Failed to send subscription email");
       }
     } catch (error) {
-      console.error("Error subscribing:", error);
+console.log("EmailJS error details:", JSON.stringify(error, null, 2));
       toast({
         title: translate("Error"),
         description: translate("There was a problem with your subscription. Please try again."),

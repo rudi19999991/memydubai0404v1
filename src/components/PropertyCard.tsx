@@ -66,7 +66,6 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
               <span>{property.area} sqft</span>
             </div>
             <div className="flex items-center">
-              <none className="h-4 w-4 mr-1" />
               <span>{property.roi}%</span>
             </div>
           </div>
