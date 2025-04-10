@@ -20,13 +20,24 @@ const Footer = () => {
               {translate("Your premier partner for luxury property investments in Dubai and Ras Al Khaimah.")}
             </p>
             <div className="flex space-x-4 mb-4">
-              <a href="#" className="text-gray-300 hover:text-luxury-gold">
-                <Instagram size={20} />
-              </a>
-              <a href="#" className="text-gray-300 hover:text-luxury-gold">
-                <Youtube size={20} />
-              </a>
-            </div>
+  <a 
+    href="https://www.instagram.com/mydubai" 
+    target="_blank" 
+    rel="noopener noreferrer" 
+    className="text-gray-300 hover:text-luxury-gold"
+  >
+    <Instagram size={20} />
+  </a>
+  <a 
+    href="https://www.youtube.com/visitdubai" 
+    target="_blank" 
+    rel="noopener noreferrer" 
+    className="text-gray-300 hover:text-luxury-gold"
+  >
+    <Youtube size={20} />
+  </a>
+</div>
+
           </div>
 
           {/* Quick Links */}
