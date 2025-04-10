@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,7 +8,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { CalendarDays, Clock } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Link } from 'react-router-dom';
 
 interface BlogPost {
   id: string;
@@ -121,9 +121,11 @@ const Blog = () => {
                       <span>{featuredPost.readTime}</span>
                     </div>
                   </div>
-                  <Button variant="default" className="w-fit bg-luxury-gold hover:bg-luxury-gold/90">
-                    {translate("Read Article")}
-                  </Button>
+                  <Link to={`/blog/${featuredPost.id}`}>
+                    <Button variant="default" className="w-fit bg-luxury-gold hover:bg-luxury-gold/90">
+                      {translate("Read Article")}
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </section>
@@ -162,9 +164,11 @@ const Blog = () => {
                     </p>
                   </CardContent>
                   <CardFooter>
-                    <Button variant="outline" className="w-full border-luxury-gold text-luxury-gold hover:bg-luxury-gold/10">
-                      {translate("Read More")}
-                    </Button>
+                    <Link to={`/blog/${post.id}`} className="w-full">
+                      <Button variant="outline" className="w-full border-luxury-gold text-luxury-gold hover:bg-luxury-gold/10">
+                        {translate("Read More")}
+                      </Button>
+                    </Link>
                   </CardFooter>
                 </Card>
               ))}
