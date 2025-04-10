@@ -166,9 +166,7 @@ const Contact = () => {
                           </div>
                           <div>
                             <h4 className="font-semibold">{translate("Email Us")}</h4>
-                            <p className="text-gray-600">
-                              info@memydubai.com<br />
-                            </p>
+                            <span className="font-semibold"></span> <a href="mailto:info@memydubai.com" className="text-blue-500 hover:underline">info@memydubai.com</a>
                           </div>
                         </div>
                       </div>
@@ -181,16 +179,20 @@ const Contact = () => {
                       
                       <div className="grid grid-cols-5 gap-4">
                         
-                        <a href="#" className="bg-gray-100 p-3 rounded-full hover:bg-luxury-gold hover:text-white transition-colors flex items-center justify-center">
-                          <Instagram className="h-5 w-5" />
-                        </a>
+                       <a 
+  href="https://www.instagram.com/mydubai" 
+  target="_blank" 
+  rel="noopener noreferrer" 
+  className="bg-gray-100 p-3 rounded-full hover:bg-luxury-gold hover:text-white transition-colors flex items-center justify-center"
+>
+  <Instagram className="h-5 w-5" />
+</a>
+
                         
-                        <a href="#" className="bg-gray-100 p-3 rounded-full hover:bg-luxury-gold hover:text-white transition-colors flex items-center justify-center">
-                          <Youtube className="h-5 w-5" />
-                        </a>
-                        <a href="#" className="bg-gray-100 p-3 rounded-full hover:bg-luxury-gold hover:text-white transition-colors flex items-center justify-center">
-                          <MessageCircle className="h-5 w-5" />
-                        </a>
+                       <a href="https://www.youtube.com/visitdubai" target="_blank" rel="noopener noreferrer" className="bg-gray-100 p-3 rounded-full hover:bg-luxury-gold hover:text-white transition-colors flex items-center justify-center">
+  <Youtube className="h-5 w-5" />
+</a>
+
                       </div>
                       
                       <div className="mt-6">
@@ -213,10 +215,7 @@ const Contact = () => {
                         Emirates Towers, Sheikh Zayed Road<br />
                         Dubai, United Arab Emirates
                       </p>
-                      <div className="mb-4">
-                        <p className="font-semibold">{translate("Contact")}:</p>
-                        <p className="text-gray-600">+971 4 123 4567</p>
-                      </div>
+                     
                       <Button variant="outline" className="w-full" onClick={() => window.open("https://maps.google.com/?q=Emirates+Towers", "_blank")}>
                         {translate("View on Map")}
                       </Button>
@@ -230,10 +229,7 @@ const Contact = () => {
                         Al Hamra Village,<br />
                         Ras Al Khaimah, United Arab Emirates
                       </p>
-                      <div className="mb-4">
-                        <p className="font-semibold">{translate("Contact")}:</p>
-                        <p className="text-gray-600">+971 7 123 4567</p>
-                      </div>
+                      
                       <Button variant="outline" className="w-full" onClick={() => window.open("https://maps.google.com/?q=Al+Hamra+Village+Ras+Al+Khaimah", "_blank")}>
                         {translate("View on Map")}
                       </Button>
