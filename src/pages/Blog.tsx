@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -8,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { CalendarDays, Clock } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { createClient } from '@supabase/supabase-js';
 
 interface BlogPost {
   id: string;
@@ -21,68 +21,42 @@ interface BlogPost {
   featured: boolean;
 }
 
+// Initialize Supabase client
+const supabaseUrl = 'https://fskuckqbsbgkbuokjwbu.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZza3Vja3Fic2Jna2J1b2tqd2J1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQzMTczNTEsImV4cCI6MjA1OTg5MzM1MX0.JArjCYN9VV1esI_PKAhCaemfZeqhIDBoAkWZRjd_jXk';
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
 const Blog = () => {
   const { translate } = useLanguage();
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [featuredPost, setFeaturedPost] = useState<BlogPost | null>(null);
 
   useEffect(() => {
-    // Load blog posts from localStorage if available
-    const storedPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
-    
-    if (storedPosts.length > 0) {
-      setBlogPosts(storedPosts);
-      
-      // Find the most recent featured post, or just the most recent post
-      const featured = storedPosts.find((post: BlogPost) => post.featured) || storedPosts[0];
-      setFeaturedPost(featured);
-    } else {
-      // Sample blog posts if no stored posts
-      const samplePosts: BlogPost[] = [
-        {
-          id: "blog-1",
-          title: "Dubai Real Estate Market Update 2025",
-          excerpt: "Explore the latest trends and developments in the Dubai real estate market.",
-          content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl vel tincidunt luctus, nunc purus aliquam nisl, eget aliquam nunc nisl eu nisi.",
-          date: "April 5, 2025",
-          readTime: "5 min read",
-          imageUrl: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80",
-          category: "Market Updates",
-          featured: true
-        },
-        {
-          id: "blog-2",
-          title: "Top 5 Investment Areas in Dubai for 2025",
-          excerpt: "Discover the most promising areas for property investment in Dubai.",
-          content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl vel tincidunt luctus, nunc purus aliquam nisl, eget aliquam nunc nisl eu nisi.",
-          date: "March 15, 2025",
-          readTime: "8 min read",
-          imageUrl: "https://images.unsplash.com/photo-1546412414-e1885e51cde5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80",
-          category: "Investment Insights",
-          featured: false
-        },
-        {
-          id: "blog-3",
-          title: "Guide to Setting Up a Business in Dubai",
-          excerpt: "Everything you need to know about establishing your business in Dubai.",
-          content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl vel tincidunt luctus, nunc purus aliquam nisl, eget aliquam nunc nisl eu nisi.",
-          date: "February 28, 2025",
-          readTime: "10 min read",
-          imageUrl: "https://images.unsplash.com/photo-1582281171754-405cb2a75fb1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80",
-          category: "Business Setup",
-          featured: false
-        }
-      ];
-      
-      setBlogPosts(samplePosts);
-      setFeaturedPost(samplePosts[0]);
-    }
+    const fetchBlogPosts = async () => {
+      const { data: posts, error } = await supabase
+        .from('blog_posts')
+        .select('*')
+        .order('date', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching blog posts:', error);
+        return;
+      }
+
+      if (posts) {
+        setBlogPosts(posts as BlogPost[]);
+        const featured = posts.find((post) => post.featured) || posts[0];
+        setFeaturedPost(featured as BlogPost);
+      }
+    };
+
+    fetchBlogPosts();
   }, []);
 
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-      
+
       <main className="flex-grow pt-20 pb-12">
         <section className="bg-gradient-to-b from-luxury-navy to-luxury-navy/80 text-white py-16">
           <div className="luxury-container">
@@ -92,15 +66,15 @@ const Blog = () => {
             </p>
           </div>
         </section>
-        
+
         <div className="luxury-container py-12">
           {featuredPost && (
             <section className="mb-16">
               <h2 className="text-2xl font-bold mb-6">{translate("Featured Article")}</h2>
               <div className="grid md:grid-cols-5 gap-8">
                 <div className="md:col-span-3">
-                  <img 
-                    src={featuredPost.imageUrl} 
+                  <img
+                    src={featuredPost.imageUrl}
                     alt={featuredPost.title}
                     className="w-full h-96 object-cover rounded-lg shadow-md"
                   />
@@ -130,18 +104,18 @@ const Blog = () => {
               </div>
             </section>
           )}
-          
+
           <section>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold">{translate("Latest Articles")}</h2>
             </div>
-            
+
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {blogPosts.map((post) => (
                 <Card key={post.id} className="overflow-hidden flex flex-col h-full">
                   <div className="h-48 overflow-hidden">
-                    <img 
-                      src={post.imageUrl} 
+                    <img
+                      src={post.imageUrl}
                       alt={post.title}
                       className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
                     />
@@ -176,7 +150,7 @@ const Blog = () => {
           </section>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );
