@@ -15,7 +15,7 @@ const PropertyYearlyCosts = () => {
       title: "Service Charges",
       description: "Annual fees charged by building management for maintenance of common areas",
       rate: "15-60 AED per sq ft per year",
-      example: 2000000,
+      example: 20000,
       notes: "Varies by building quality and amenities"
     },
     {

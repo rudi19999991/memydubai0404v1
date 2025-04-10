@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Index from './pages/Index';
 import Properties from './pages/Properties';
 import PropertyDetail from './pages/PropertyDetail';
@@ -15,6 +16,7 @@ import Financing from './pages/Financing';
 import ROI from './pages/ROI';
 import CompanySetup from './pages/CompanySetup';
 import PropertyUpload from './pages/Admin/PropertyUpload';
+import BlogUpload from './pages/Admin/BlogUpload';
 import CryptoBuying from './pages/CryptoBuying';
 import AreaDetail from './pages/AreaDetail';
 import Blog from './pages/Blog';
@@ -22,6 +24,7 @@ import CookieConsent from './components/compliance/CookieConsent';
 import CookiePolicy from './pages/CookiePolicy';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Impressum from './pages/Impressum';
+import AdminLayout from './components/layouts/AdminLayout';
 
 function App() {
   return (
@@ -39,7 +42,8 @@ function App() {
             <Route path="/financing" element={<Financing />} />
             <Route path="/roi" element={<ROI />} />
             <Route path="/company-setup" element={<CompanySetup />} />
-            <Route path="/admin/property-upload" element={<PropertyUpload />} />
+            <Route path="/admin/property-upload" element={<AdminLayout><PropertyUpload /></AdminLayout>} />
+            <Route path="/admin/blog-upload" element={<AdminLayout><BlogUpload /></AdminLayout>} />
             <Route path="/crypto-buying" element={<CryptoBuying />} />
             <Route path="/area/:id" element={<AreaDetail />} />
             <Route path="/blog" element={<Blog />} />

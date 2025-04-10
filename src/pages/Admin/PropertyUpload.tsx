@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -17,6 +16,24 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Upload, Plus, X, Check, Building } from "lucide-react";
+import { Link } from "react-router-dom";
+
+interface PropertyData {
+  id: string;
+  title: string;
+  description: string;
+  location: string;
+  price: number;
+  type: string;
+  bedrooms: number;
+  bathrooms: number;
+  area: number;
+  roi: number;
+  imageUrl: string;
+  status: string;
+  features: string[];
+  images?: string[];
+}
 
 const PropertyUpload = () => {
   const { translate } = useLanguage();
@@ -40,6 +57,17 @@ const PropertyUpload = () => {
   const [images, setImages] = useState<File[]>([]);
   const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [savedProperties, setSavedProperties] = useState<PropertyData[]>([]);
+
+  // Load saved properties on component mount
+  useEffect(() => {
+    const loadProperties = () => {
+      const storedProperties = JSON.parse(localStorage.getItem('properties') || '[]');
+      setSavedProperties(storedProperties);
+    };
+    
+    loadProperties();
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -99,16 +127,17 @@ const PropertyUpload = () => {
       status: formData.status,
       features: features,
       description: formData.description,
+    images: imagePreviewUrls,
     };
-    
-    // In a real application, you would send this data to your backend/API
-    console.log("New property data:", newProperty);
-    
+
     // For demo purposes, we'll store it in localStorage
     const existingProperties = JSON.parse(localStorage.getItem('properties') || '[]');
     const updatedProperties = [...existingProperties, newProperty];
     localStorage.setItem('properties', JSON.stringify(updatedProperties));
-    
+     
+    // Update the local state
+    setSavedProperties(updatedProperties);
+
     // Simulate form submission with a delay
     setTimeout(() => {
       setIsSubmitting(false);
@@ -150,8 +179,58 @@ const PropertyUpload = () => {
                 {translate("Use this form to add new property listings to the website")}
               </p>
               <div className="gold-separator mx-auto mt-4" />
+	</div>
+            <div className="mb-8 flex gap-4">
+              <Button 
+                variant="outline"
+                className="border-luxury-gold text-luxury-gold hover:bg-luxury-gold/10"
+                asChild
+              >
+                <Link to="/properties">
+                  {translate("View Properties")}
+                </Link>
+              </Button>
+              
+              <Button 
+                variant="outline"
+                className="border-luxury-navy text-luxury-navy hover:bg-luxury-navy/10"
+                asChild
+              >
+                <Link to="/admin/blog-upload">
+                  {translate("Switch to Blog Upload")}
+                </Link>
+              </Button>
             </div>
             
+            {/* Recent Uploads */}
+            {savedProperties.length > 0 && (
+              <div className="mb-8">
+                <h2 className="text-lg font-semibold mb-4">{translate("Recently Added Properties")}</h2>
+                <div className="bg-gray-50 p-4 rounded-lg max-h-48 overflow-y-auto">
+                  <ul className="divide-y divide-gray-200">
+                    {savedProperties.slice().reverse().slice(0, 5).map((property) => (
+                      <li key={property.id} className="py-2 flex items-center justify-between">
+                        <div className="flex items-center">
+                          <div className="h-10 w-10 rounded overflow-hidden mr-3">
+                            <img src={property.imageUrl} alt={property.title} className="h-full w-full object-cover" />
+                          </div>
+                          <span className="font-medium">{property.title}</span>
+                        </div>
+                        <div className="flex items-center">
+                          <span className="text-sm text-gray-500 mr-2">{new Date().toLocaleDateString()}</span>
+                          <Button size="sm" variant="ghost" asChild>
+                            <Link to={`/properties/${property.id}`}>
+                              {translate("View")}
+                            </Link>
+                          </Button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+                        
             <Card>
               <CardHeader className="bg-luxury-navy text-white">
                 <CardTitle className="flex items-center">
