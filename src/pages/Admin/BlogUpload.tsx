@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
@@ -13,8 +14,9 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, Plus, X, Check, BookText, CalendarDays, Clock } from "lucide-react";
+import { Upload, Plus, X, Check, BookText, CalendarDays, Clock, LinkIcon } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const BlogUpload = () => {
   const { translate } = useLanguage();
@@ -32,7 +34,9 @@ const BlogUpload = () => {
   
   const [thumbnailImage, setThumbnailImage] = useState<File | null>(null);
   const [thumbnailPreviewUrl, setThumbnailPreviewUrl] = useState<string>("");
+  const [imageUrl, setImageUrl] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageInputMethod, setImageInputMethod] = useState<"file" | "url">("file");
 
   const categories = [
     "Market Updates",
@@ -65,6 +69,17 @@ const BlogUpload = () => {
       const file = files[0];
       setThumbnailImage(file);
       setThumbnailPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  const handleImageUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setImageUrl(e.target.value);
+    setThumbnailPreviewUrl(e.target.value);
+  };
+
+  const handleImageUrlSubmit = () => {
+    if (imageUrl.trim()) {
+      setThumbnailPreviewUrl(imageUrl.trim());
     }
   };
 
@@ -116,6 +131,7 @@ const BlogUpload = () => {
       });
       setThumbnailImage(null);
       setThumbnailPreviewUrl("");
+      setImageUrl("");
     }, 1500);
   };
 
@@ -271,51 +287,93 @@ const BlogUpload = () => {
             <div className="pt-4 border-t">
               <h3 className="text-lg font-semibold mb-4">{translate("Thumbnail Image")}</h3>
               
-              <div className="grid grid-cols-1 gap-4">
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                  <Upload className="mx-auto h-10 w-10 text-gray-400" />
-                  <p className="mt-2 text-sm text-gray-600">
-                    {translate("Drag and drop an image, or click to select")}
-                  </p>
-                  <Input
-                    id="thumbnail"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleThumbnailUpload}
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="mt-2"
-                    onClick={() => document.getElementById("thumbnail")?.click()}
-                  >
-                    {translate("Select Image")}
-                  </Button>
-                </div>
+              <Tabs value={imageInputMethod} onValueChange={(value) => setImageInputMethod(value as "file" | "url")} className="w-full">
+                <TabsList className="grid grid-cols-2 mb-4">
+                  <TabsTrigger value="file">{translate("Upload File")}</TabsTrigger>
+                  <TabsTrigger value="url">{translate("Image URL")}</TabsTrigger>
+                </TabsList>
                 
-                {thumbnailPreviewUrl && (
-                  <div className="relative">
-                    <img
-                      src={thumbnailPreviewUrl}
-                      alt="Thumbnail preview"
-                      className="h-48 w-full object-cover rounded-md"
+                <TabsContent value="file" className="mt-0">
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                    <Upload className="mx-auto h-10 w-10 text-gray-400" />
+                    <p className="mt-2 text-sm text-gray-600">
+                      {translate("Drag and drop an image, or click to select")}
+                    </p>
+                    <Input
+                      id="thumbnail"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleThumbnailUpload}
                     />
                     <Button
                       type="button"
-                      variant="destructive"
-                      size="icon"
-                      className="absolute top-2 right-2 h-8 w-8"
-                      onClick={() => {
-                        setThumbnailImage(null);
-                        setThumbnailPreviewUrl("");
-                      }}
+                      variant="outline"
+                      className="mt-2"
+                      onClick={() => document.getElementById("thumbnail")?.click()}
                     >
-                      <X className="h-4 w-4" />
+                      {translate("Select Image")}
                     </Button>
                   </div>
-                )}
-              </div>
+                </TabsContent>
+                
+                <TabsContent value="url" className="mt-0">
+                  <div className="space-y-4">
+                    <div className="flex gap-2">
+                      <div className="flex-grow">
+                        <Input
+                          id="imageUrl"
+                          type="url"
+                          value={imageUrl}
+                          onChange={handleImageUrlChange}
+                          placeholder={translate("Enter image URL (https://example.com/image.jpg)")}
+                        />
+                      </div>
+                      <Button 
+                        type="button" 
+                        onClick={handleImageUrlSubmit}
+                        variant="outline"
+                        className="flex-shrink-0"
+                      >
+                        <LinkIcon className="mr-1 h-4 w-4" /> {translate("Add")}
+                      </Button>
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      {translate("Enter the full URL of an image from the web")}
+                    </p>
+                  </div>
+                </TabsContent>
+              </Tabs>
+              
+              {thumbnailPreviewUrl && (
+                <div className="relative mt-4">
+                  <img
+                    src={thumbnailPreviewUrl}
+                    alt="Thumbnail preview"
+                    className="h-48 w-full object-cover rounded-md"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80";
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    className="absolute top-2 right-2 h-8 w-8"
+                    onClick={() => {
+                      if (thumbnailImage) {
+                        URL.revokeObjectURL(thumbnailPreviewUrl);
+                      }
+                      setThumbnailImage(null);
+                      setThumbnailPreviewUrl("");
+                      setImageUrl("");
+                    }}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
             </div>
             
             <Button 

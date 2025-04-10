@@ -26,6 +26,7 @@ const BlogPost = () => {
   const navigate = useNavigate();
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     // Load blog posts from localStorage
@@ -43,6 +44,10 @@ const BlogPost = () => {
 
   const handleBack = () => {
     navigate('/blog');
+  };
+
+  const handleImageError = () => {
+    setImageError(true);
   };
 
   if (loading) {
@@ -76,6 +81,8 @@ const BlogPost = () => {
       </div>
     );
   }
+
+  const fallbackImage = "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80";
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -115,9 +122,10 @@ const BlogPost = () => {
             
             <div className="mb-10">
               <img 
-                src={post.imageUrl} 
+                src={imageError ? fallbackImage : post.imageUrl} 
                 alt={post.title}
                 className="w-full aspect-video object-cover rounded-lg shadow-md mb-8"
+                onError={handleImageError}
               />
               
               <div className="prose max-w-none">
