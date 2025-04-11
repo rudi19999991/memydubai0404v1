@@ -1,12 +1,16 @@
-
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { createClient } from '@supabase/supabase-js';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { CalendarDays, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { CalendarDays, Clock, ArrowLeft } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
+
+// Supabase setup
+const supabaseUrl = 'https://fskuckqbsbgkbuokjwbu.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // Your full key here
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 interface BlogPost {
   id: string;
@@ -20,135 +24,72 @@ interface BlogPost {
   featured: boolean;
 }
 
-const BlogPost = () => {
-  const { translate } = useLanguage();
+const BlogPostPage = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
-  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
-    // Load blog posts from localStorage
-    const storedPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
-    
-    if (storedPosts.length > 0) {
-      const foundPost = storedPosts.find((post: BlogPost) => post.id === id);
-      if (foundPost) {
-        setPost(foundPost);
+    const fetchPost = async () => {
+      if (!id) return;
+      const { data, error } = await supabase
+        .from('blog_posts')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) {
+        console.error('Error fetching blog post:', error);
+      } else {
+        setPost(data as BlogPost);
       }
-    }
-    
-    setLoading(false);
+      setLoading(false);
+    };
+
+    fetchPost();
   }, [id]);
 
-  const handleBack = () => {
-    navigate('/blog');
-  };
-
-  const handleImageError = () => {
-    setImageError(true);
-  };
-
-  if (loading) {
-    return (
-      <div className="flex flex-col min-h-screen">
-        <Navbar />
-        <main className="flex-grow pt-20 pb-12 luxury-container">
-          <div className="flex items-center justify-center h-64">
-            <p>{translate("Loading...")}</p>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
-  if (!post) {
-    return (
-      <div className="flex flex-col min-h-screen">
-        <Navbar />
-        <main className="flex-grow pt-20 pb-12 luxury-container">
-          <div className="text-center py-16">
-            <h2 className="text-2xl font-bold mb-4">{translate("Blog post not found")}</h2>
-            <Button onClick={handleBack} className="flex items-center gap-2">
-              <ArrowLeft className="h-4 w-4" />
-              {translate("Back to Blog")}
-            </Button>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
-  const fallbackImage = "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80";
+  if (loading) return <div>Loading...</div>;
+  if (!post) return <div>Post not found</div>;
 
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-      
-      <main className="flex-grow pt-20 pb-12">
-        <div className="luxury-container">
-          <Button 
-            variant="outline" 
-            onClick={handleBack}
-            className="mb-8 flex items-center gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            {translate("Back to Blog")}
-          </Button>
-          
-          <article className="max-w-4xl mx-auto">
-            <div className="mb-6">
-              <Badge className="mb-4 bg-luxury-gold">
-                {translate(post.category)}
-              </Badge>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
-                {post.title}
-              </h1>
-              
-              <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-8">
-                <div className="flex items-center">
-                  <CalendarDays className="h-4 w-4 mr-2" />
-                  <span>{post.date}</span>
-                </div>
-                <div className="flex items-center">
-                  <Clock className="h-4 w-4 mr-2" />
-                  <span>{post.readTime}</span>
-                </div>
-              </div>
+
+      <main className="flex-grow pt-20 pb-12 luxury-container">
+        <div className="max-w-4xl mx-auto">
+          <img
+            src={post.imageUrl}
+            alt={post.title}
+            className="w-full h-96 object-cover rounded-lg shadow-md mb-8"
+          />
+          <Badge className="mb-4 bg-luxury-gold">{post.category}</Badge>
+          <h1 className="text-4xl font-bold mb-6">{post.title}</h1>
+          <div className="flex items-center text-sm text-gray-500 mb-6">
+            <div className="flex items-center mr-4">
+              <CalendarDays className="h-4 w-4 mr-1" />
+              <span>{post.date}</span>
             </div>
-            
-            <div className="mb-10">
-              <img 
-                src={imageError ? fallbackImage : post.imageUrl} 
-                alt={post.title}
-                className="w-full aspect-video object-cover rounded-lg shadow-md mb-8"
-                onError={handleImageError}
-              />
-              
-              <div className="prose max-w-none">
-                <p className="text-xl font-medium mb-6">
-                  {post.excerpt}
-                </p>
-                
-                <div className="whitespace-pre-line">
-                  {post.content.split('\n').map((paragraph, index) => (
-                    <p key={index} className="mb-4">
-                      {paragraph}
-                    </p>
-                  ))}
-                </div>
-              </div>
+            <div className="flex items-center">
+              <Clock className="h-4 w-4 mr-1" />
+              <span>{post.readTime}</span>
             </div>
-          </article>
+          </div>
+          <div className="prose max-w-none text-lg">
+            {post.content}
+          </div>
+
+          <div className="mt-8">
+            <Button asChild variant="outline" className="border-luxury-gold text-luxury-gold hover:bg-luxury-gold/10">
+              <a href="/blog">← Back to Blog</a>
+            </Button>
+          </div>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );
 };
 
-export default BlogPost;
+export default BlogPostPage;

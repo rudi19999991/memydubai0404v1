@@ -7,29 +7,12 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { CalendarDays, Clock } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { createClient } from '@supabase/supabase-js';
-
-interface BlogPost {
-  id: string;
-  title: string;
-  excerpt: string;
-  content: string;
-  date: string;
-  readTime: string;
-  imageUrl: string;
-  category: string;
-  featured: boolean;
-}
-
-// Initialize Supabase client
-const supabaseUrl = 'https://fskuckqbsbgkbuokjwbu.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZza3Vja3Fic2Jna2J1b2tqd2J1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQzMTczNTEsImV4cCI6MjA1OTg5MzM1MX0.JArjCYN9VV1esI_PKAhCaemfZeqhIDBoAkWZRjd_jXk';
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+import { supabase } from '@/supabaseClient';
 
 const Blog = () => {
   const { translate } = useLanguage();
-  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
-  const [featuredPost, setFeaturedPost] = useState<BlogPost | null>(null);
+  const [blogPosts, setBlogPosts] = useState([]);
+  const [featuredPost, setFeaturedPost] = useState(null);
 
   useEffect(() => {
     const fetchBlogPosts = async () => {
@@ -44,9 +27,9 @@ const Blog = () => {
       }
 
       if (posts) {
-        setBlogPosts(posts as BlogPost[]);
+        setBlogPosts(posts);
         const featured = posts.find((post) => post.featured) || posts[0];
-        setFeaturedPost(featured as BlogPost);
+        setFeaturedPost(featured);
       }
     };
 
@@ -56,7 +39,6 @@ const Blog = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-
       <main className="flex-grow pt-20 pb-12">
         <section className="bg-gradient-to-b from-luxury-navy to-luxury-navy/80 text-white py-16">
           <div className="luxury-container">
@@ -106,10 +88,7 @@ const Blog = () => {
           )}
 
           <section>
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold">{translate("Latest Articles")}</h2>
-            </div>
-
+            <h2 className="text-2xl font-bold mb-6">{translate("Latest Articles")}</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {blogPosts.map((post) => (
                 <Card key={post.id} className="overflow-hidden flex flex-col h-full">
@@ -122,12 +101,8 @@ const Blog = () => {
                   </div>
                   <CardHeader>
                     <div className="flex justify-between items-start mb-2">
-                      <Badge className="bg-luxury-gold">
-                        {translate(post.category)}
-                      </Badge>
-                      <div className="text-sm text-gray-500">
-                        {post.readTime}
-                      </div>
+                      <Badge className="bg-luxury-gold">{translate(post.category)}</Badge>
+                      <div className="text-sm text-gray-500">{post.readTime}</div>
                     </div>
                     <CardTitle className="text-xl">{post.title}</CardTitle>
                     <CardDescription className="line-clamp-2">{post.excerpt}</CardDescription>
@@ -150,7 +125,6 @@ const Blog = () => {
           </section>
         </div>
       </main>
-
       <Footer />
     </div>
   );
