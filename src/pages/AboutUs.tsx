@@ -139,7 +139,7 @@ const AboutUs = () => {
                 <div className="h-64 overflow-hidden">
                   <img 
                     src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80" 
-                    alt="Alexander Bennett" 
+                    alt="Marvin Bennett" 
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -157,7 +157,7 @@ const AboutUs = () => {
                 <div className="h-64 overflow-hidden">
                   <img 
                     src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80" 
-                    alt="Sarah Al-Hassan" 
+                    alt="Anna Ryboeva" 
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -175,7 +175,7 @@ const AboutUs = () => {
                 <div className="h-64 overflow-hidden">
                   <img 
                     src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80" 
-                    alt="Michael Zhang" 
+                    alt="Rudolf Becker" 
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -193,7 +193,7 @@ const AboutUs = () => {
                 <div className="h-64 overflow-hidden">
                   <img 
                     src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80" 
-                    alt="Elena Petrov" 
+                    alt="Emely Steiner" 
                     className="w-full h-full object-cover"
                   />
                 </div>
