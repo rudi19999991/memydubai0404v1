@@ -26,7 +26,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import Impressum from './pages/Impressum';
 import AdminLayout from './components/layouts/AdminLayout';
 import BlogDetail from './pages/BlogDetail';
-import BlogPostForm from './pages/admin/BlogPostForm';
+import BlogPostForm from './pages/Admin/BlogPostForm';
 import Admin from './pages/Admin';
 import Login from './pages/Login'; // Optional login page
 import ProtectedRoute from './components/ProtectedRoute'; // ✅ Create this
