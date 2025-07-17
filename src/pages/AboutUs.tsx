@@ -144,7 +144,7 @@ const AboutUs = () => {
                   />
                 </div>
                 <div className="p-5">
-                  <h3 className="text-xl font-bold mb-1">Alexander Bennett</h3>
+                  <h3 className="text-xl font-bold mb-1">Marvin Bennett</h3>
                   <p className="text-luxury-gold mb-3">{translate("Founder & CEO")}</p>
                   <p className="text-gray-600 text-sm mb-4">
                     {translate("A visionary leader with over 20 years of experience in UAE real estate and global investments.")}
@@ -162,10 +162,10 @@ const AboutUs = () => {
                   />
                 </div>
                 <div className="p-5">
-                  <h3 className="text-xl font-bold mb-1">Sarah Al-Hassan</h3>
+                  <h3 className="text-xl font-bold mb-1">Anna Ryboeva</h3>
                   <p className="text-luxury-gold mb-3">{translate("Managing Director")}</p>
                   <p className="text-gray-600 text-sm mb-4">
-                    {translate("An expert in luxury properties with deep connections to Dubai's most exclusive communities.")}
+                    {translate("An expert with 20 years experience in luxury properties with deep connections to Dubai's most exclusive communities.")}
                   </p>
                 </div>
               </div>
@@ -180,7 +180,7 @@ const AboutUs = () => {
                   />
                 </div>
                 <div className="p-5">
-                  <h3 className="text-xl font-bold mb-1">Michael Zhang</h3>
+                  <h3 className="text-xl font-bold mb-1">Rudolf Becker</h3>
                   <p className="text-luxury-gold mb-3">{translate("Investment Director")}</p>
                   <p className="text-gray-600 text-sm mb-4">
                     {translate("Specializes in high-ROI investments and portfolio diversification strategies across the Emirates.")}
@@ -198,7 +198,7 @@ const AboutUs = () => {
                   />
                 </div>
                 <div className="p-5">
-                  <h3 className="text-xl font-bold mb-1">Elena Petrov</h3>
+                  <h3 className="text-xl font-bold mb-1">Emely Steiner</h3>
                   <p className="text-luxury-gold mb-3">{translate("Legal Director")}</p>
                   <p className="text-gray-600 text-sm mb-4">
                     {translate("Ensures seamless transactions with expertise in UAE property law and international investments.")}
