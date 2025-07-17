@@ -211,7 +211,6 @@ const AboutUs = () => {
                   </p>
                 </div>
               </div>
-
               {/* Team Member 4 */}
               <div className="bg-white rounded-lg overflow-hidden shadow-md">
                 <div className="h-64 overflow-hidden">
