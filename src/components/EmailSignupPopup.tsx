@@ -23,7 +23,6 @@ const EmailSignupPopup = () => {
   const [consentGiven, setConsentGiven] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  // ✅ Your reCAPTCHA v2 Invisible Site Key
   const RECAPTCHA_SITE_KEY = "6Lf5WIcrAAAAAOKSp3kPSYojFFPD47mZ757b4nZr";
 
   useEffect(() => {
@@ -52,7 +51,8 @@ const EmailSignupPopup = () => {
       const token = await new Promise<string>((resolve, reject) => {
         if (window.grecaptcha && RECAPTCHA_SITE_KEY) {
           window.grecaptcha.ready(() => {
-            window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: "submit" })
+            window.grecaptcha
+              .execute(RECAPTCHA_SITE_KEY, { action: "submit" })
               .then(resolve)
               .catch(reject);
           });
@@ -64,7 +64,7 @@ const EmailSignupPopup = () => {
       const formPayload = new FormData();
       formPayload.append("Email", email);
       formPayload.append("Source", "Newsletter Popup");
-      formPayload.append("g-recaptcha-response", token); // ✅ Required by Formspree
+      formPayload.append("g-recaptcha-response", token); // Required by Formspree
 
       const response = await fetch("https://formspree.io/f/meozoznb", {
         method: "POST",
