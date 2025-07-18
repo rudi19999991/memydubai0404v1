@@ -13,7 +13,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
-const RECAPTCHA_SITE_KEY = "6Lf5WIcrAAAAAOKSp3kPSYojFFPD47mZ757b4nZr";
+const RECAPTCHA_SITE_KEY = "6Lev04crAAAAAKe5aazVNhyeCx5i5FPB0AIOC6TF";
 
 const EmailSignupPopup = () => {
   const { translate } = useLanguage();
