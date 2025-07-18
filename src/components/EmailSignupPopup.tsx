@@ -21,8 +21,29 @@ const EmailSignupPopup = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [consentGiven, setConsentGiven] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [recaptchaReady, setRecaptchaReady] = useState(false);
 
   const RECAPTCHA_SITE_KEY = "6Lf5WIcrAAAAAOKSp3kPSYojFFPD47mZ757b4nZr";
+
+  // Load reCAPTCHA script
+  useEffect(() => {
+    if (!window.grecaptcha) {
+      const script = document.createElement("script");
+      script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
+      script.async = true;
+      script.defer = true;
+      script.onload = () => {
+        window.grecaptcha.ready(() => {
+          setRecaptchaReady(true);
+        });
+      };
+      document.body.appendChild(script);
+    } else {
+      window.grecaptcha.ready(() => {
+        setRecaptchaReady(true);
+      });
+    }
+  }, []);
 
   useEffect(() => {
     const hasSeen = localStorage.getItem("hasSeenEmailPopup");
@@ -44,19 +65,18 @@ const EmailSignupPopup = () => {
       return;
     }
 
+    if (!recaptchaReady || !window.grecaptcha) {
+      toast({
+        title: translate("Error"),
+        description: "reCAPTCHA not ready. Please try again in a few seconds.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      if (!window.grecaptcha || !RECAPTCHA_SITE_KEY) {
-        throw new Error("reCAPTCHA not ready");
-      }
-
-      // Wait for grecaptcha to be ready
-      await new Promise<void>((resolve) => {
-        window.grecaptcha.ready(resolve);
-      });
-
-      // Execute grecaptcha and get token
       const token = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, {
         action: "submit",
       });
