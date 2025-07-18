@@ -42,52 +42,44 @@ const EmailSignupPopup = () => {
 
     setIsSubmitting(true);
     try {
-      console.log("[Debug] Getting reCAPTCHA token...");
       const token = await new Promise<string>((resolve, reject) => {
         if (window.grecaptcha && RECAPTCHA_SITE_KEY) {
           window.grecaptcha.ready(() => {
             window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: "submit" })
               .then(resolve)
-              .catch(err => { console.error("grecaptcha error:", err); reject(err); });
+              .catch(reject);
           });
         } else {
-          console.error("grecaptcha not loaded or site key missing");
-          reject("grecaptcha not ready");
+          reject("reCAPTCHA not ready");
         }
       });
-      console.log("[Debug] Got token:", token);
 
-      const formPayload = new FormData();
-      formPayload.append("Email", email);
-      formPayload.append("Source", "Newsletter Popup");
+      const formPayload = new URLSearchParams();
+      formPayload.append("email", email);
+      formPayload.append("_subject", "New Newsletter Signup");
+      formPayload.append("_replyto", email);
+      formPayload.append("source", "Newsletter Popup");
       formPayload.append("g-recaptcha-response", token);
-
-      console.log("[Debug] Form data about to send:");
-      for (let entry of formPayload.entries()) {
-        console.log("  ", entry[0], ":", entry[1]);
-      }
 
       const response = await fetch("https://formspree.io/f/xwpqpqjl", {
         method: "POST",
-        body: formPayload,
-        headers: { Accept: "application/json" },
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: formPayload.toString(),
       });
 
-      console.log("[Debug] Formspree response status:", response.status);
-
       if (response.ok) {
-        console.log("[Debug] Submission succeeded");
         localStorage.setItem("hasSeenEmailPopup", "true");
         setIsSuccess(true);
-        toast({ title: translate("Subscribed"), description: translate("Thank you!"), });
+        toast({ title: translate("Subscribed"), description: translate("Thank you!") });
         setTimeout(() => setIsOpen(false), 2000);
       } else {
         const json = await response.json();
-        console.error("[Debug] Submission failed JSON:", json);
         toast({ title: translate("Error"), description: json.error || "Check console for debug logs.", variant: "destructive" });
       }
     } catch (err) {
-      console.error("[Debug] handleSubmit catch:", err);
       toast({ title: translate("Error"), description: "Submission failed—see console.", variant: "destructive" });
     } finally {
       setIsSubmitting(false);
@@ -113,9 +105,29 @@ const EmailSignupPopup = () => {
         <div className="mt-4">
           {!isSuccess ? (
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* email + consent UI here */}
+              <Input
+                type="email"
+                placeholder={translate("Enter your email")}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <div className="flex items-start space-x-2">
+                <Checkbox
+                  checked={consentGiven}
+                  onCheckedChange={() => setConsentGiven(!consentGiven)}
+                  className="data-[state=checked]:bg-luxury-gold data-[state=checked]:border-luxury-gold mt-1"
+                />
+                <div className="text-sm text-gray-600">
+                  <span>{translate("I agree to receive updates and accept the")}</span>{" "}
+                  <Link to="/privacy-policy" className="text-luxury-gold underline hover:text-luxury-gold/80">
+                    {translate("privacy policy")}
+                  </Link>
+                </div>
+              </div>
               <Button type="submit" className="bg-luxury-gold" disabled={isSubmitting}>
-                {isSubmitting ? "..." : translate("Subscribe")} <ChevronRight className="ml-1 h-4 w-4" />
+                {isSubmitting ? "..." : translate("Subscribe")}
+                <ChevronRight className="ml-1 h-4 w-4" />
               </Button>
             </form>
           ) : (
