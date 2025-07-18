@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Mail, X, ChevronRight, CheckCircle2 } from "lucide-react";
+import { Mail, ChevronRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -13,8 +13,6 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import emailjs from '@emailjs/browser';
-import { TARGET_EMAIL, EMAILJS_CONFIG, EMAIL_TEMPLATES } from "@/config/email";
 
 const EmailSignupPopup = () => {
   const { translate } = useLanguage();
@@ -25,29 +23,20 @@ const EmailSignupPopup = () => {
   const [consentGiven, setConsentGiven] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  // Initialize EmailJS when component mounts
-  useEffect(() => {
-    emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
+  // ✅ Your reCAPTCHA v2 Invisible Site Key
+  const RECAPTCHA_SITE_KEY = "6Lf5WIcrAAAAAOKSp3kPSYojFFPD47mZ757b4nZr";
 
-  }, []);
-
-  // Show popup after a short delay when component mounts
   useEffect(() => {
-    // Check if user has already seen popup (using localStorage)
     const hasSeenPopup = localStorage.getItem("hasSeenEmailPopup");
-    
     if (!hasSeenPopup) {
-      const timer = setTimeout(() => {
-        setIsOpen(true);
-      }, 5000); // 5 seconds delay
-      
+      const timer = setTimeout(() => setIsOpen(true), 5000);
       return () => clearTimeout(timer);
     }
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!consentGiven) {
       toast({
         title: translate("Consent Required"),
@@ -56,66 +45,48 @@ const EmailSignupPopup = () => {
       });
       return;
     }
-    
-    setIsSubmitting(true);
-    
-    try {
-      // Initialize EmailJS if not done globally
-      if (!emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY)) {
-        emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
-      }
 
-     // Send email notification to company about new subscriber
-      const templateParams = {
-  from_name: "Website Newsletter Subscription", // ✅ Name of your form
-  from_email: email,                             // ✅ Subscriber email address
-  to_name: "Me & My Dubai Team",                  // ✅ Who the email is for
-  to_email: TARGET_EMAIL,                         // ✅ Where the email is sent
-  subject: "New Newsletter Subscription",         // ✅ Email subject
-  message: `New subscriber with email: ${email}`,  // ✅ Body content
-      };
-      
-      const response = await emailjs.send(
-        EMAILJS_CONFIG.SERVICE_ID,
-        EMAILJS_CONFIG.TEMPLATE_ID_NEWSLETTER,
-        templateParams
-      );
-      
-      if (response.status === 200) {
-        // Send confirmation email to subscriber
-        const confirmationParams = {
-          to_name: "Valued Subscriber",
-  to_email: email,
-  from_name: "Me & My Dubai",
-  from_email: TARGET_EMAIL,
-  reply_to: TARGET_EMAIL,
-  subject: EMAIL_TEMPLATES.newsletterConfirmation.subject,
-  message: EMAIL_TEMPLATES.newsletterConfirmation.body,
-};
-        
-        await emailjs.send(
-          EMAILJS_CONFIG.SERVICE_ID,
-          EMAILJS_CONFIG.TEMPLATE_ID_CONFIRMATION,
-          confirmationParams
-        );
-        
-        setIsSuccess(true);
+    setIsSubmitting(true);
+
+    try {
+      const token = await new Promise<string>((resolve, reject) => {
+        if (window.grecaptcha && RECAPTCHA_SITE_KEY) {
+          window.grecaptcha.ready(() => {
+            window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: "submit" })
+              .then(resolve)
+              .catch(reject);
+          });
+        } else {
+          reject("reCAPTCHA not loaded");
+        }
+      });
+
+      const formPayload = new FormData();
+      formPayload.append("Email", email);
+      formPayload.append("Source", "Newsletter Popup");
+      formPayload.append("g-recaptcha-response", token); // ✅ Required by Formspree
+
+      const response = await fetch("https://formspree.io/f/meozoznb", {
+        method: "POST",
+        body: formPayload,
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      if (response.ok) {
         localStorage.setItem("hasSeenEmailPopup", "true");
-        
+        setIsSuccess(true);
         toast({
           title: translate("Successfully Subscribed"),
           description: translate("Thank you for subscribing to our market updates."),
         });
-        
-        // Close popup after successful subscription (with delay to show success state)
-        setTimeout(() => {
-          setIsOpen(false);
-        }, 2000);
+        setTimeout(() => setIsOpen(false), 2000);
       } else {
-        throw new Error("Failed to send subscription email");
+        throw new Error("Formspree submission failed");
       }
     } catch (error) {
-      console.error("Error subscribing:", error);
+      console.error("reCAPTCHA error:", error);
       toast({
         title: translate("Error"),
         description: translate("There was a problem with your subscription. Please try again."),
@@ -126,7 +97,6 @@ const EmailSignupPopup = () => {
     }
   };
 
-  // Function to close popup and remember user choice
   const handleClose = () => {
     setIsOpen(false);
     localStorage.setItem("hasSeenEmailPopup", "true");
@@ -144,7 +114,7 @@ const EmailSignupPopup = () => {
             {translate("Subscribe to receive the latest market trends and investment opportunities.")}
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="mt-4">
           {!isSuccess ? (
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -162,45 +132,39 @@ const EmailSignupPopup = () => {
                   className="border-luxury-gold/30 focus-visible:ring-luxury-gold"
                 />
               </div>
-              
+
               <div className="flex items-start space-x-2">
-                <Checkbox 
-                  id="terms" 
+                <Checkbox
+                  id="terms"
                   checked={consentGiven}
                   onCheckedChange={(checked) => setConsentGiven(checked === true)}
                   className="data-[state=checked]:bg-luxury-gold data-[state=checked]:border-luxury-gold"
                 />
                 <div className="grid gap-1 leading-none">
-                  <label
-                    htmlFor="terms"
-                    className="text-xs text-gray-600 font-medium"
-                  >
+                  <label htmlFor="terms" className="text-xs text-gray-600 font-medium">
                     {translate("I agree to receive email marketing communications and understand I can unsubscribe at any time.")}
                   </label>
                 </div>
               </div>
-              
+
               <div className="text-xs text-gray-500">
-                {translate("By subscribing, you agree to our")} 
+                {translate("By subscribing, you agree to our")}
                 <Link to="/privacy-policy" className="underline ml-1 hover:text-luxury-gold">
                   {translate("Privacy Policy")}
                 </Link>.
               </div>
-              
+
               <div className="flex items-center justify-end gap-2 pt-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleClose}
-                >
+                <Button type="button" variant="outline" onClick={handleClose}>
                   {translate("Maybe Later")}
                 </Button>
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="bg-luxury-gold hover:bg-luxury-gold/90 text-white"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "..." : translate("Subscribe")} <ChevronRight className="ml-1 h-4 w-4" />
+                  {isSubmitting ? "..." : translate("Subscribe")}
+                  <ChevronRight className="ml-1 h-4 w-4" />
                 </Button>
               </div>
             </form>
