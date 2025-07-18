@@ -45,18 +45,20 @@ const EmailSignupPopup = () => {
     }
 
     setIsSubmitting(true);
+
     try {
-      const token = await new Promise<string>((resolve, reject) => {
-        if (window.grecaptcha && RECAPTCHA_SITE_KEY) {
-          window.grecaptcha.ready(() => {
-            window.grecaptcha
-              .execute(RECAPTCHA_SITE_KEY, { action: "submit" })
-              .then(resolve)
-              .catch(reject);
-          });
-        } else {
-          reject("reCAPTCHA not ready");
-        }
+      if (!window.grecaptcha || !RECAPTCHA_SITE_KEY) {
+        throw new Error("reCAPTCHA not ready");
+      }
+
+      // Wait for grecaptcha to be ready
+      await new Promise<void>((resolve) => {
+        window.grecaptcha.ready(resolve);
+      });
+
+      // Execute grecaptcha and get token
+      const token = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, {
+        action: "submit",
       });
 
       const payload = {
@@ -91,7 +93,7 @@ const EmailSignupPopup = () => {
       console.error("Error submitting form:", err);
       toast({
         title: translate("Error"),
-        description: "Something went wrong.",
+        description: "Something went wrong. Please try again later.",
         variant: "destructive",
       });
     } finally {
@@ -132,7 +134,8 @@ const EmailSignupPopup = () => {
                 </label>
               </div>
               <Button type="submit" className="bg-luxury-gold" disabled={isSubmitting}>
-                {isSubmitting ? "..." : translate("Subscribe")} <ChevronRight className="ml-1 h-4 w-4" />
+                {isSubmitting ? "..." : translate("Subscribe")}
+                <ChevronRight className="ml-1 h-4 w-4" />
               </Button>
             </form>
           ) : (
