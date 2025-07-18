@@ -66,7 +66,7 @@ const EmailSignupPopup = () => {
       formPayload.append("Source", "Newsletter Popup");
       formPayload.append("g-recaptcha-response", token); // Required by Formspree
 
-      const response = await fetch("https://formspree.io/f/meozoznb", {
+      const response = await fetch("https://formspree.io/f/xwpqpqjl", {
         method: "POST",
         body: formPayload,
         headers: {
@@ -83,10 +83,12 @@ const EmailSignupPopup = () => {
         });
         setTimeout(() => setIsOpen(false), 2000);
       } else {
-        throw new Error("Formspree submission failed");
+        const data = await response.json();
+        console.error("Formspree error:", data);
+        throw new Error(data?.error || "Formspree submission failed");
       }
     } catch (error) {
-      console.error("reCAPTCHA error:", error);
+      console.error("Submission error:", error);
       toast({
         title: translate("Error"),
         description: translate("There was a problem with your subscription. Please try again."),
