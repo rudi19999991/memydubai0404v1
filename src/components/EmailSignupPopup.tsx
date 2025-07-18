@@ -21,29 +21,8 @@ const EmailSignupPopup = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [consentGiven, setConsentGiven] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [recaptchaReady, setRecaptchaReady] = useState(false);
 
   const RECAPTCHA_SITE_KEY = "6Lf5WIcrAAAAAOKSp3kPSYojFFPD47mZ757b4nZr";
-
-  // Load reCAPTCHA script
-  useEffect(() => {
-    if (!window.grecaptcha) {
-      const script = document.createElement("script");
-      script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
-      script.async = true;
-      script.defer = true;
-      script.onload = () => {
-        window.grecaptcha.ready(() => {
-          setRecaptchaReady(true);
-        });
-      };
-      document.body.appendChild(script);
-    } else {
-      window.grecaptcha.ready(() => {
-        setRecaptchaReady(true);
-      });
-    }
-  }, []);
 
   useEffect(() => {
     const hasSeen = localStorage.getItem("hasSeenEmailPopup");
@@ -65,18 +44,28 @@ const EmailSignupPopup = () => {
       return;
     }
 
-    if (!recaptchaReady || !window.grecaptcha) {
-      toast({
-        title: translate("Error"),
-        description: "reCAPTCHA not ready. Please try again in a few seconds.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
+      // Wait for grecaptcha to be available
+      const ensureRecaptchaReady = async (): Promise<void> => {
+        return new Promise((resolve, reject) => {
+          let retries = 10;
+          const check = () => {
+            if (window.grecaptcha && window.grecaptcha.execute) {
+              resolve();
+            } else if (retries-- > 0) {
+              setTimeout(check, 300);
+            } else {
+              reject(new Error("reCAPTCHA not ready"));
+            }
+          };
+          check();
+        });
+      };
+
+      await ensureRecaptchaReady();
+
       const token = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, {
         action: "submit",
       });
@@ -113,7 +102,7 @@ const EmailSignupPopup = () => {
       console.error("Error submitting form:", err);
       toast({
         title: translate("Error"),
-        description: "Something went wrong. Please try again later.",
+        description: "Something went wrong. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -154,8 +143,7 @@ const EmailSignupPopup = () => {
                 </label>
               </div>
               <Button type="submit" className="bg-luxury-gold" disabled={isSubmitting}>
-                {isSubmitting ? "..." : translate("Subscribe")}
-                <ChevronRight className="ml-1 h-4 w-4" />
+                {isSubmitting ? "..." : translate("Subscribe")} <ChevronRight className="ml-1 h-4 w-4" />
               </Button>
             </form>
           ) : (
