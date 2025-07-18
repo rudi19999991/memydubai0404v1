@@ -4,7 +4,6 @@ import { Mail, ChevronRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
@@ -35,8 +34,13 @@ const EmailSignupPopup = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!consentGiven) {
-      toast({ title: translate("Consent Required"), description: translate("Please agree before subscribing."), variant: "destructive" });
+      toast({
+        title: translate("Consent Required"),
+        description: translate("Please agree before subscribing."),
+        variant: "destructive",
+      });
       return;
     }
 
@@ -45,7 +49,8 @@ const EmailSignupPopup = () => {
       const token = await new Promise<string>((resolve, reject) => {
         if (window.grecaptcha && RECAPTCHA_SITE_KEY) {
           window.grecaptcha.ready(() => {
-            window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: "submit" })
+            window.grecaptcha
+              .execute(RECAPTCHA_SITE_KEY, { action: "submit" })
               .then(resolve)
               .catch(reject);
           });
@@ -54,20 +59,19 @@ const EmailSignupPopup = () => {
         }
       });
 
-      const formPayload = new URLSearchParams();
-      formPayload.append("email", email);
-      formPayload.append("_subject", "New Newsletter Signup");
-      formPayload.append("_replyto", email);
-      formPayload.append("source", "Newsletter Popup");
-      formPayload.append("g-recaptcha-response", token);
+      const payload = {
+        Email: email,
+        Source: "Newsletter Popup",
+        "g-recaptcha-response": token,
+      };
 
       const response = await fetch("https://formspree.io/f/xwpqpqjl", {
         method: "POST",
         headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/x-www-form-urlencoded",
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
-        body: formPayload.toString(),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
@@ -77,18 +81,22 @@ const EmailSignupPopup = () => {
         setTimeout(() => setIsOpen(false), 2000);
       } else {
         const json = await response.json();
-        toast({ title: translate("Error"), description: json.error || "Check console for debug logs.", variant: "destructive" });
+        toast({
+          title: translate("Error"),
+          description: json.error || "Submission failed.",
+          variant: "destructive",
+        });
       }
     } catch (err) {
-      toast({ title: translate("Error"), description: "Submission failed—see console.", variant: "destructive" });
+      console.error("Error submitting form:", err);
+      toast({
+        title: translate("Error"),
+        description: "Something went wrong.",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleClose = () => {
-    setIsOpen(false);
-    localStorage.setItem("hasSeenEmailPopup", "true");
   };
 
   return (
@@ -99,7 +107,9 @@ const EmailSignupPopup = () => {
             <Mail className="h-5 w-5 text-luxury-gold" />
             {translate("Dubai Market Insights")}
           </DialogTitle>
-          <DialogDescription>{translate("Subscribe to receive the latest market trends and investment opportunities.")}</DialogDescription>
+          <DialogDescription>
+            {translate("Subscribe to receive the latest market trends and investment opportunities.")}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="mt-4">
@@ -115,19 +125,14 @@ const EmailSignupPopup = () => {
               <div className="flex items-start space-x-2">
                 <Checkbox
                   checked={consentGiven}
-                  onCheckedChange={() => setConsentGiven(!consentGiven)}
-                  className="data-[state=checked]:bg-luxury-gold data-[state=checked]:border-luxury-gold mt-1"
+                  onCheckedChange={(val) => setConsentGiven(Boolean(val))}
                 />
-                <div className="text-sm text-gray-600">
-                  <span>{translate("I agree to receive updates and accept the")}</span>{" "}
-                  <Link to="/privacy-policy" className="text-luxury-gold underline hover:text-luxury-gold/80">
-                    {translate("privacy policy")}
-                  </Link>
-                </div>
+                <label className="text-sm">
+                  {translate("I agree to receive updates and newsletters.")}
+                </label>
               </div>
               <Button type="submit" className="bg-luxury-gold" disabled={isSubmitting}>
-                {isSubmitting ? "..." : translate("Subscribe")}
-                <ChevronRight className="ml-1 h-4 w-4" />
+                {isSubmitting ? "..." : translate("Subscribe")} <ChevronRight className="ml-1 h-4 w-4" />
               </Button>
             </form>
           ) : (
@@ -135,7 +140,9 @@ const EmailSignupPopup = () => {
               <CheckCircle2 className="h-12 w-12 text-green-500 mx-auto mb-4" />
               <h3 className="text-lg font-bold mb-2">{translate("Subscription Confirmed!")}</h3>
               <p className="text-gray-600 mb-4">{translate("Thank you for subscribing!")}</p>
-              <Button onClick={handleClose} className="bg-luxury-gold">{translate("Continue")}</Button>
+              <Button onClick={() => setIsOpen(false)} className="bg-luxury-gold">
+                {translate("Continue")}
+              </Button>
             </div>
           )}
         </div>
