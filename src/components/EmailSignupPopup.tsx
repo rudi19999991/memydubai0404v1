@@ -13,6 +13,8 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
+const RECAPTCHA_SITE_KEY = "6Lf5WIcrAAAAAOKSp3kPSYojFFPD47mZ757b4nZr";
+
 const EmailSignupPopup = () => {
   const { translate } = useLanguage();
   const { toast } = useToast();
@@ -21,8 +23,7 @@ const EmailSignupPopup = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [consentGiven, setConsentGiven] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-
-  const RECAPTCHA_SITE_KEY = "6Lf5WIcrAAAAAOKSp3kPSYojFFPD47mZ757b4nZr";
+  const [recaptchaReady, setRecaptchaReady] = useState(false);
 
   useEffect(() => {
     const hasSeen = localStorage.getItem("hasSeenEmailPopup");
@@ -30,6 +31,20 @@ const EmailSignupPopup = () => {
       const timer = setTimeout(() => setIsOpen(true), 5000);
       return () => clearTimeout(timer);
     }
+  }, []);
+
+  // Load reCAPTCHA
+  useEffect(() => {
+    const waitForRecaptcha = () => {
+      if (window.grecaptcha && window.grecaptcha.ready) {
+        window.grecaptcha.ready(() => {
+          setRecaptchaReady(true);
+        });
+      } else {
+        setTimeout(waitForRecaptcha, 300);
+      }
+    };
+    waitForRecaptcha();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -44,28 +59,17 @@ const EmailSignupPopup = () => {
       return;
     }
 
+    if (!recaptchaReady) {
+      toast({
+        title: translate("Error"),
+        description: "reCAPTCHA is not ready. Please try again shortly.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
-
     try {
-      // Wait for grecaptcha to be available
-      const ensureRecaptchaReady = async (): Promise<void> => {
-        return new Promise((resolve, reject) => {
-          let retries = 10;
-          const check = () => {
-            if (window.grecaptcha && window.grecaptcha.execute) {
-              resolve();
-            } else if (retries-- > 0) {
-              setTimeout(check, 300);
-            } else {
-              reject(new Error("reCAPTCHA not ready"));
-            }
-          };
-          check();
-        });
-      };
-
-      await ensureRecaptchaReady();
-
       const token = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, {
         action: "submit",
       });
@@ -142,7 +146,7 @@ const EmailSignupPopup = () => {
                   {translate("I agree to receive updates and newsletters.")}
                 </label>
               </div>
-              <Button type="submit" className="bg-luxury-gold" disabled={isSubmitting}>
+              <Button type="submit" className="bg-luxury-gold" disabled={isSubmitting || !recaptchaReady}>
                 {isSubmitting ? "..." : translate("Subscribe")} <ChevronRight className="ml-1 h-4 w-4" />
               </Button>
             </form>
