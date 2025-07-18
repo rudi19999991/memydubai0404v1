@@ -25,14 +25,29 @@
 <p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta name="author" content="Lovable" /&gt;</span></p>
 <p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta property="og:image" content="/og-image.png" /&gt;</span></p>
 <p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- ✅ Add this reCAPTCHA script --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- ✅ reCAPTCHA v3 --&gt;</span></p>
 <p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script src="https://www.google.com/recaptcha/api.js?render=6Lf5WIcrAAAAAOKSp3kPSYojFFPD47mZ757b4nZr" async defer&gt;&lt;/script&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- Optional: Custom helper for reCAPTCHA --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>function getRecaptchaToken(action = "submit", callback) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (!window.grecaptcha) return console.error("reCAPTCHA not loaded");</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>grecaptcha.ready(() =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>grecaptcha</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>.execute("6Lf5WIcrAAAAAOKSp3kPSYojFFPD47mZ757b4nZr", { action })</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>.then(token =&gt; callback(token));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</span></p>
 <p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/head&gt;</span></p>
 <p class="p2"><span class="s1"></span><br></p>
 <p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;body&gt;</span></p>
 <p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div id="root"&gt;&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! --&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- ❗ DO NOT REMOVE THIS COMMENT OR SCRIPT --&gt;</span></p>
 <p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdn.gpteng.co/gptengineer.js" type="module"&gt;&lt;/script&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- ✅ Vite entry point --&gt;</span></p>
 <p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script type="module" src="/src/main.tsx"&gt;&lt;/script&gt;</span></p>
 <p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/body&gt;</span></p>
 <p class="p1"><span class="s1">&lt;/html&gt;</span></p>
