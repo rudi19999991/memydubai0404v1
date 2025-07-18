@@ -67,7 +67,7 @@ const ContactForm: React.FC = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
-    
+
     try {
     // Initialize EmailJS if not done globally
       if (!emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY)) {
@@ -84,14 +84,14 @@ const ContactForm: React.FC = () => {
         to_email: TARGET_EMAIL,
         consent_timestamp: new Date().toISOString(),
       };
-      
+
       // Send email to company using EmailJS
       const response = await emailjs.send(
         EMAILJS_CONFIG.SERVICE_ID,
         EMAILJS_CONFIG.TEMPLATE_ID,
         templateParams
       );
-      
+
       if (response.status === 200) {
         // Send confirmation email to the user
         const confirmationParams = {
@@ -102,7 +102,7 @@ const ContactForm: React.FC = () => {
           from_name: "Me & My Dubai",
           reply_to: TARGET_EMAIL,
         };
-        
+
         await emailjs.send(
           EMAILJS_CONFIG.SERVICE_ID,
           EMAILJS_CONFIG.TEMPLATE_ID_CONFIRMATION,
@@ -112,7 +112,7 @@ const ContactForm: React.FC = () => {
           title: translate("Message Sent!"),
           description: translate("Thank you for your inquiry. We'll get back to you soon."),
         });
-        
+
         // Reset form
         form.reset();
       } else {
@@ -137,7 +137,7 @@ const ContactForm: React.FC = () => {
         <p className="text-gray-600 mb-6">
           {translate("Interested in investing in Dubai or Ras Al Khaimah properties? Fill out the form and our investment consultants will get back to you shortly.")}
         </p>
-        
+
         <div className="space-y-4 mb-8">
           <div className="flex items-start">
             <MapPin className="h-5 w-5 mr-3 text-luxury-gold mt-1" />
@@ -146,7 +146,7 @@ const ContactForm: React.FC = () => {
               <p className="text-gray-600">{translate("Business Bay, Dubai, UAE")}</p>
             </div>
           </div>
-          
+
           <div className="flex items-start">
             <Mail className="h-5 w-5 mr-3 text-luxury-gold mt-1" />
             <div>
@@ -154,7 +154,7 @@ const ContactForm: React.FC = () => {
               <p className="text-gray-600">{TARGET_EMAIL}</p>
             </div>
           </div>
-          
+
           <div className="flex items-start">
             <Phone className="h-5 w-5 mr-3 text-luxury-gold mt-1" />
             <div>
@@ -163,7 +163,7 @@ const ContactForm: React.FC = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="space-y-4">
           <h4 className="font-semibold mb-2">{translate("Connect With Us")}</h4>
           <div className="flex space-x-3">
@@ -178,13 +178,13 @@ const ContactForm: React.FC = () => {
             </Button>
           </div>
         </div>
-        
+
         {/* Data Protection Info */}
         <div className="mt-6">
           <DataProtectionInfo />
         </div>
       </div>
-      
+
       <div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -204,7 +204,7 @@ const ContactForm: React.FC = () => {
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name="email"
@@ -222,7 +222,7 @@ const ContactForm: React.FC = () => {
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name="phone"
@@ -239,7 +239,7 @@ const ContactForm: React.FC = () => {
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name="subject"
@@ -256,7 +256,7 @@ const ContactForm: React.FC = () => {
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name="message"
@@ -274,7 +274,7 @@ const ContactForm: React.FC = () => {
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name="consent"
@@ -292,7 +292,7 @@ const ContactForm: React.FC = () => {
                       {translate("I agree to receive communications and understand I can unsubscribe at any time.")}
                     </FormLabel>
                     <p className="text-xs text-gray-500">
-                      {translate("By submitting, you agree to our")}{" "}
+                      {translate("By submitting, you agree to our")} {" "}
                       <Link to="/terms" className="text-luxury-gold underline hover:text-luxury-gold/80">
                         {translate("Terms of Service")}
                       </Link>{" "}
@@ -306,7 +306,7 @@ const ContactForm: React.FC = () => {
                 </FormItem>
               )}
             />
-            
+
             <Button 
               type="submit" 
               className="w-full bg-luxury-gold hover:bg-luxury-gold/90"
