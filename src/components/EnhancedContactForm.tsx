@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
@@ -15,7 +14,7 @@ interface EnhancedContactFormProps {
 const EnhancedContactForm: React.FC<EnhancedContactFormProps> = ({ defaultInterest }) => {
   const { translate } = useLanguage();
   const { toast } = useToast();
-  
+
   const [formData, setFormData] = useState({
     title: "",
     firstName: "",
@@ -25,24 +24,24 @@ const EnhancedContactForm: React.FC<EnhancedContactFormProps> = ({ defaultIntere
     interestedIn: defaultInterest || "",
     message: "",
   });
-  
+
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
-  
+
   const handleSelectChange = (name: string, value: string) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
-  
-  const handleSubmit = (e: React.FormEvent) => {
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     // Validate form fields
     if (!formData.firstName || !formData.lastName || !formData.email || !formData.interestedIn) {
       toast({
@@ -53,30 +52,57 @@ const EnhancedContactForm: React.FC<EnhancedContactFormProps> = ({ defaultIntere
       setIsLoading(false);
       return;
     }
-    
-    // Simulate form submission
-    console.log("Form data submitted:", formData);
-    
-    setTimeout(() => {
-      setIsLoading(false);
+
+    const formPayload = new FormData();
+    formPayload.append("Title", formData.title);
+    formPayload.append("First Name", formData.firstName);
+    formPayload.append("Last Name", formData.lastName);
+    formPayload.append("Email", formData.email);
+    formPayload.append("Phone", formData.phone);
+    formPayload.append("Interested In", formData.interestedIn);
+    formPayload.append("Message", formData.message);
+
+    try {
+      const response = await fetch("https://formspree.io/f/meozoznb", {
+        method: "POST",
+        body: formPayload,
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      if (response.ok) {
+        toast({
+          title: translate("Thank You!"),
+          description: translate("Your consultation request has been submitted. We'll contact you shortly."),
+        });
+        setFormData({
+          title: "",
+          firstName: "",
+          lastName: "",
+          email: "",
+          phone: "",
+          interestedIn: "",
+          message: "",
+        });
+      } else {
+        toast({
+          title: translate("Error"),
+          description: translate("There was a problem submitting your request. Please try again."),
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
       toast({
-        title: translate("Thank You!"),
-        description: translate("Your consultation request has been submitted. We'll contact you shortly."),
+        title: translate("Error"),
+        description: translate("Submission failed. Please check your internet connection."),
+        variant: "destructive"
       });
-      
-      // Reset form
-      setFormData({
-        title: "",
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        interestedIn: "",
-        message: "",
-      });
-    }, 1500);
+    }
+
+    setIsLoading(false);
   };
-  
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -90,14 +116,14 @@ const EnhancedContactForm: React.FC<EnhancedContactFormProps> = ({ defaultIntere
               <SelectValue placeholder={translate("Select")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="mr">{translate("Mr.")}</SelectItem>
-              <SelectItem value="mrs">{translate("Mrs.")}</SelectItem>
-              <SelectItem value="ms">{translate("Ms.")}</SelectItem>
-              <SelectItem value="dr">{translate("Dr.")}</SelectItem>
+              <SelectItem value="Mr.">{translate("Mr.")}</SelectItem>
+              <SelectItem value="Mrs.">{translate("Mrs.")}</SelectItem>
+              <SelectItem value="Ms.">{translate("Ms.")}</SelectItem>
+              <SelectItem value="Dr.">{translate("Dr.")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
-        
+
         <div>
           <Label htmlFor="firstName">{translate("First Name")} *</Label>
           <Input
@@ -109,7 +135,7 @@ const EnhancedContactForm: React.FC<EnhancedContactFormProps> = ({ defaultIntere
             required
           />
         </div>
-        
+
         <div>
           <Label htmlFor="lastName">{translate("Last Name")} *</Label>
           <Input
@@ -122,7 +148,7 @@ const EnhancedContactForm: React.FC<EnhancedContactFormProps> = ({ defaultIntere
           />
         </div>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <Label htmlFor="email">{translate("Email")} *</Label>
@@ -136,7 +162,7 @@ const EnhancedContactForm: React.FC<EnhancedContactFormProps> = ({ defaultIntere
             required
           />
         </div>
-        
+
         <div>
           <Label htmlFor="phone">{translate("Phone Number")}</Label>
           <Input
@@ -148,7 +174,7 @@ const EnhancedContactForm: React.FC<EnhancedContactFormProps> = ({ defaultIntere
           />
         </div>
       </div>
-      
+
       <div>
         <Label htmlFor="interestedIn">{translate("Interested In")} *</Label>
         <Select
@@ -160,15 +186,15 @@ const EnhancedContactForm: React.FC<EnhancedContactFormProps> = ({ defaultIntere
             <SelectValue placeholder={translate("Select your interest")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="property-dubai">{translate("Property in Dubai")}</SelectItem>
-            <SelectItem value="property-rak">{translate("Property in Ras Al Khaimah")}</SelectItem>
-            <SelectItem value="company-setup">{translate("Company Setup")}</SelectItem>
-            <SelectItem value="legal-services">{translate("Legal Services")}</SelectItem>
-            <SelectItem value="general">{translate("General Information")}</SelectItem>
+            <SelectItem value="Property in Dubai">{translate("Property in Dubai")}</SelectItem>
+            <SelectItem value="Property in Ras Al Khaimah">{translate("Property in Ras Al Khaimah")}</SelectItem>
+            <SelectItem value="Company Setup">{translate("Company Setup")}</SelectItem>
+            <SelectItem value="Legal Services">{translate("Legal Services")}</SelectItem>
+            <SelectItem value="General Information">{translate("General Information")}</SelectItem>
           </SelectContent>
         </Select>
       </div>
-      
+
       <div>
         <Label htmlFor="message">{translate("Message")}</Label>
         <Textarea
@@ -180,11 +206,11 @@ const EnhancedContactForm: React.FC<EnhancedContactFormProps> = ({ defaultIntere
           rows={4}
         />
       </div>
-      
+
       <div className="text-sm text-gray-500">
         {translate("Fields marked with * are required")}
       </div>
-      
+
       <Button 
         type="submit" 
         className="w-full bg-luxury-gold hover:bg-luxury-gold/90"
