@@ -7,21 +7,6 @@
     <meta name="description" content="Lovable Generated Project" />
     <meta name="author" content="Lovable" />
     <meta property="og:image" content="/og-image.png" />
-
-    <!-- ✅ reCAPTCHA v3 -->
-    <script src="https://www.google.com/recaptcha/api.js?render=6Lev04crAAAAAKe5aazVNhyeCx5i5FPB0AIOC6TF" async defer></script>
-
-    <!-- Optional: Helper for reCAPTCHA -->
-    <script>
-      function getRecaptchaToken(action = "submit", callback) {
-        if (!window.grecaptcha) return console.error("reCAPTCHA not loaded");
-        grecaptcha.ready(() => {
-          grecaptcha
-            .execute("6Lf5WIcrAAAAAOKSp3kPSYojFFPD47mZ757b4nZr", { action })
-            .then(token => callback(token));
-        });
-      }
-    </script>
   </head>
   <body>
     <div id="root"></div>
