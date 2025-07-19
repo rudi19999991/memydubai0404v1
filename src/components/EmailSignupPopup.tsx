@@ -13,8 +13,6 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
-const RECAPTCHA_SITE_KEY = "6Lev04crAAAAAKe5aazVNhyeCx5i5FPB0AIOC6TF";
-
 const EmailSignupPopup = () => {
   const { translate } = useLanguage();
   const { toast } = useToast();
@@ -23,7 +21,6 @@ const EmailSignupPopup = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [consentGiven, setConsentGiven] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [recaptchaReady, setRecaptchaReady] = useState(false);
 
   useEffect(() => {
     const hasSeen = localStorage.getItem("hasSeenEmailPopup");
@@ -31,20 +28,6 @@ const EmailSignupPopup = () => {
       const timer = setTimeout(() => setIsOpen(true), 5000);
       return () => clearTimeout(timer);
     }
-  }, []);
-
-  // Load reCAPTCHA
-  useEffect(() => {
-    const waitForRecaptcha = () => {
-      if (window.grecaptcha && window.grecaptcha.ready) {
-        window.grecaptcha.ready(() => {
-          setRecaptchaReady(true);
-        });
-      } else {
-        setTimeout(waitForRecaptcha, 300);
-      }
-    };
-    waitForRecaptcha();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -59,27 +42,14 @@ const EmailSignupPopup = () => {
       return;
     }
 
-    if (!recaptchaReady) {
-      toast({
-        title: translate("Error"),
-        description: "reCAPTCHA is not ready. Please try again shortly.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setIsSubmitting(true);
+
+    const payload = {
+      Email: email,
+      Source: "Newsletter Popup",
+    };
+
     try {
-      const token = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, {
-        action: "submit",
-      });
-
-      const payload = {
-        Email: email,
-        Source: "Newsletter Popup",
-        "g-recaptcha-response": token,
-      };
-
       const response = await fetch("https://formspree.io/f/xwpqpqjl", {
         method: "POST",
         headers: {
@@ -106,7 +76,7 @@ const EmailSignupPopup = () => {
       console.error("Error submitting form:", err);
       toast({
         title: translate("Error"),
-        description: "Something went wrong. Please try again.",
+        description: "Something went wrong.",
         variant: "destructive",
       });
     } finally {
@@ -146,8 +116,9 @@ const EmailSignupPopup = () => {
                   {translate("I agree to receive updates and newsletters.")}
                 </label>
               </div>
-              <Button type="submit" className="bg-luxury-gold" disabled={isSubmitting || !recaptchaReady}>
-                {isSubmitting ? "..." : translate("Subscribe")} <ChevronRight className="ml-1 h-4 w-4" />
+              <Button type="submit" className="bg-luxury-gold" disabled={isSubmitting}>
+                {isSubmitting ? "..." : translate("Subscribe")}
+                <ChevronRight className="ml-1 h-4 w-4" />
               </Button>
             </form>
           ) : (
