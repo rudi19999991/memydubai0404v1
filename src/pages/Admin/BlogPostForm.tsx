@@ -4,8 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 const BlogPostForm = () => {
   const { translate } = useLanguage();
@@ -26,6 +27,7 @@ const BlogPostForm = () => {
 
     let imageUrl = '';
 
+    // Upload image if selected
     if (imageFile) {
       const fileExt = imageFile.name.split('.').pop();
       const fileName = `${Date.now()}.${fileExt}`;
@@ -42,9 +44,10 @@ const BlogPostForm = () => {
       }
 
       const { data } = supabase.storage.from('blog-images').getPublicUrl(filePath);
-      imageUrl = data.publicUrl;
+      imageUrl = data?.publicUrl || '';
     }
 
+    // Insert new blog post
     const { error: insertError } = await supabase.from('blog_posts').insert([
       {
         title,
@@ -68,56 +71,74 @@ const BlogPostForm = () => {
   };
 
   return (
-    <div className="luxury-container pt-20 pb-12">
+    <div className="luxury-container pt-20 pb-12 max-w-3xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">{translate('Create New Blog Post')}</h1>
       <form onSubmit={handleSubmit} className="space-y-6">
-        <Input
-          label={translate('Title')}
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
-        <Textarea
-          label={translate('Excerpt')}
-          value={excerpt}
-          onChange={(e) => setExcerpt(e.target.value)}
-          required
-        />
-        <Textarea
-          label={translate('Content')}
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          required
-        />
-        <Input
-          label={translate('Category')}
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          required
-        />
-        <Input
-          label={translate('Read Time')}
-          value={readTime}
-          onChange={(e) => setReadTime(e.target.value)}
-          required
-        />
-        <div className="flex items-center space-x-4">
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={featured}
-              onChange={(e) => setFeatured(e.target.checked)}
-            />
-            <span>{translate('Featured')}</span>
-          </label>
+        <div>
+          <Label>{translate('Title')}</Label>
+          <Input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
         </div>
-        <Input
-          label={translate('Image')}
-          type="file"
-          accept="image/*"
-          onChange={(e) => setImageFile(e.target.files?.[0] || null)}
-        />
-        <Button type="submit" disabled={uploading}>
+
+        <div>
+          <Label>{translate('Excerpt')}</Label>
+          <Textarea
+            value={excerpt}
+            onChange={(e) => setExcerpt(e.target.value)}
+            required
+          />
+        </div>
+
+        <div>
+          <Label>{translate('Content')}</Label>
+          <Textarea
+            className="min-h-[200px]"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            required
+          />
+        </div>
+
+        <div>
+          <Label>{translate('Category')}</Label>
+          <Input
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            required
+          />
+        </div>
+
+        <div>
+          <Label>{translate('Read Time (e.g. 5 min read)')}</Label>
+          <Input
+            value={readTime}
+            onChange={(e) => setReadTime(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Switch
+            checked={featured}
+            onCheckedChange={setFeatured}
+            id="featured"
+          />
+          <Label htmlFor="featured">{translate('Featured Post')}</Label>
+        </div>
+
+        <div>
+          <Label>{translate('Cover Image')}</Label>
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+          />
+        </div>
+
+        <Button type="submit" disabled={uploading} className="bg-luxury-gold hover:bg-luxury-gold/90">
           {uploading ? translate('Uploading...') : translate('Publish')}
         </Button>
       </form>
