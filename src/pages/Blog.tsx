@@ -65,7 +65,7 @@ const Blog = () => {
               <div className="grid md:grid-cols-5 gap-8">
                 <div className="md:col-span-3">
                   <img
-                    src={featuredPost.imageUrl}
+                    src={featuredPost.imageurl}
                     alt={featuredPost.title}
                     className="w-full h-96 object-cover rounded-lg shadow-md"
                   />
@@ -83,7 +83,7 @@ const Blog = () => {
                     </div>
                     <div className="flex items-center">
                       <Clock className="h-4 w-4 mr-1" />
-                      <span>{featuredPost.readTime}</span>
+                      <span>{featuredPost.readtime}</span>
                     </div>
                   </div>
                   <Link to={`/blog/${featuredPost.id}`}>
@@ -106,7 +106,7 @@ const Blog = () => {
                   <Card key={post.id} className="overflow-hidden flex flex-col h-full">
                     <div className="h-48 overflow-hidden">
                       <img
-                        src={post.imageUrl}
+                        src={post.imageurl}
                         alt={post.title}
                         className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
                       />
@@ -114,7 +114,7 @@ const Blog = () => {
                     <CardHeader>
                       <div className="flex justify-between items-start mb-2">
                         <Badge className="bg-luxury-gold">{translate(post.category)}</Badge>
-                        <div className="text-sm text-gray-500">{post.readTime}</div>
+                        <div className="text-sm text-gray-500">{post.readtime}</div>
                       </div>
                       <CardTitle className="text-xl">{post.title}</CardTitle>
                       <CardDescription className="line-clamp-2">{post.excerpt}</CardDescription>
