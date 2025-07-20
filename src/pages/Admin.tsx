@@ -46,8 +46,8 @@ const Admin = () => {
         excerpt,
         content,
         date,
-        read_time: readTime,
-        image_url: imageUrl,
+        readtime: readTime,
+        imageurl: imageUrl,
         category,
         featured,
       }
