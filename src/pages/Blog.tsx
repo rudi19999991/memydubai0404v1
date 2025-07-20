@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { CalendarDays, Clock } from 'lucide-react';
@@ -26,9 +28,16 @@ const Blog = () => {
         return;
       }
 
-      if (posts) {
-        setBlogPosts(posts);
-        const featured = posts.find((post) => post.featured) || posts[0];
+      // Filter: only Dubai/UAE property market blogs
+      const filteredPosts = posts.filter(post =>
+        post.category?.toLowerCase().includes("property") ||
+        post.category?.toLowerCase().includes("dubai") ||
+        post.category?.toLowerCase().includes("uae")
+      );
+
+      if (filteredPosts.length > 0) {
+        setBlogPosts(filteredPosts);
+        const featured = filteredPosts.find(p => p.featured) || filteredPosts[0];
         setFeaturedPost(featured);
       }
     };
@@ -63,7 +72,7 @@ const Blog = () => {
                 </div>
                 <div className="md:col-span-2 flex flex-col justify-center">
                   <Badge className="mb-3 w-fit bg-luxury-gold">
-                    {translate(featuredPost.category)}
+                    {translate(featuredPost.category || "Real Estate")}
                   </Badge>
                   <h3 className="text-3xl font-bold mb-4">{featuredPost.title}</h3>
                   <p className="text-gray-600 mb-4">{featuredPost.excerpt}</p>
@@ -89,39 +98,43 @@ const Blog = () => {
 
           <section>
             <h2 className="text-2xl font-bold mb-6">{translate("Latest Articles")}</h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {blogPosts.map((post) => (
-                <Card key={post.id} className="overflow-hidden flex flex-col h-full">
-                  <div className="h-48 overflow-hidden">
-                    <img
-                      src={post.imageUrl}
-                      alt={post.title}
-                      className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
-                    />
-                  </div>
-                  <CardHeader>
-                    <div className="flex justify-between items-start mb-2">
-                      <Badge className="bg-luxury-gold">{translate(post.category)}</Badge>
-                      <div className="text-sm text-gray-500">{post.readTime}</div>
+            {blogPosts.length === 0 ? (
+              <p className="text-center text-gray-500">{translate("No articles found.")}</p>
+            ) : (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {blogPosts.map((post) => (
+                  <Card key={post.id} className="overflow-hidden flex flex-col h-full">
+                    <div className="h-48 overflow-hidden">
+                      <img
+                        src={post.imageUrl}
+                        alt={post.title}
+                        className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+                      />
                     </div>
-                    <CardTitle className="text-xl">{post.title}</CardTitle>
-                    <CardDescription className="line-clamp-2">{post.excerpt}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="flex-grow">
-                    <p className="text-sm text-gray-500 flex items-center">
-                      <CalendarDays className="h-3.5 w-3.5 mr-1" /> {post.date}
-                    </p>
-                  </CardContent>
-                  <CardFooter>
-                    <Link to={`/blog/${post.id}`} className="w-full">
-                      <Button variant="outline" className="w-full border-luxury-gold text-luxury-gold hover:bg-luxury-gold/10">
-                        {translate("Read More")}
-                      </Button>
-                    </Link>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
+                    <CardHeader>
+                      <div className="flex justify-between items-start mb-2">
+                        <Badge className="bg-luxury-gold">{translate(post.category)}</Badge>
+                        <div className="text-sm text-gray-500">{post.readTime}</div>
+                      </div>
+                      <CardTitle className="text-xl">{post.title}</CardTitle>
+                      <CardDescription className="line-clamp-2">{post.excerpt}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex-grow">
+                      <p className="text-sm text-gray-500 flex items-center">
+                        <CalendarDays className="h-3.5 w-3.5 mr-1" /> {post.date}
+                      </p>
+                    </CardContent>
+                    <CardFooter>
+                      <Link to={`/blog/${post.id}`} className="w-full">
+                        <Button variant="outline" className="w-full border-luxury-gold text-luxury-gold hover:bg-luxury-gold/10">
+                          {translate("Read More")}
+                        </Button>
+                      </Link>
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+            )}
           </section>
         </div>
       </main>
