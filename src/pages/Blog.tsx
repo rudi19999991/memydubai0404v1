@@ -1,131 +1,70 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { CalendarDays, Clock } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { supabase } from '@/supabaseClient';
+import React, { useEffect, useState } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { Link } from "react-router-dom";
+import { LoaderCircle } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+const RSS_FEED_URL = "https://api.rss2json.com/v1/api.json?rss_url=https://www.arabianbusiness.com/feed"; // Example feed
 
 const Blog = () => {
   const { translate } = useLanguage();
-  const [blogPosts, setBlogPosts] = useState([]);
-  const [featuredPost, setFeaturedPost] = useState(null);
+  const [posts, setPosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchBlogPosts = async () => {
-      const { data: posts, error } = await supabase
-        .from('blog_posts')
-        .select('*')
-        .order('date', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching blog posts:', error);
-        return;
-      }
-
-      if (posts) {
-        setBlogPosts(posts);
-        const featured = posts.find((post) => post.featured) || posts[0];
-        setFeaturedPost(featured);
-      }
-    };
-
-    fetchBlogPosts();
+    fetch(RSS_FEED_URL)
+      .then(res => res.json())
+      .then(data => {
+        setPosts(data.items.slice(0, 6));
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to load blog feed:", err);
+        setLoading(false);
+      });
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Navbar />
-      <main className="flex-grow pt-20 pb-12">
-        <section className="bg-gradient-to-b from-luxury-navy to-luxury-navy/80 text-white py-16">
-          <div className="luxury-container">
-            <h1 className="text-4xl font-bold mb-4">{translate("MeMy Dubai Blog")}</h1>
-            <p className="text-lg max-w-3xl">
-              {translate("Insights, tips, and updates on Dubai real estate, business opportunities, and luxury lifestyle.")}
-            </p>
-          </div>
-        </section>
+    <div className="max-w-6xl mx-auto px-4 py-12">
+      <h1 className="text-3xl font-bold mb-4 text-center">{translate("Latest Blog Posts")}</h1>
+      <p className="text-center text-gray-500 mb-8">
+        {translate("Stay updated with the latest news and insights.")}
+      </p>
 
-        <div className="luxury-container py-12">
-          {featuredPost && (
-            <section className="mb-16">
-              <h2 className="text-2xl font-bold mb-6">{translate("Featured Article")}</h2>
-              <div className="grid md:grid-cols-5 gap-8">
-                <div className="md:col-span-3">
-                  <img
-                    src={featuredPost.imageUrl}
-                    alt={featuredPost.title}
-                    className="w-full h-96 object-cover rounded-lg shadow-md"
-                  />
-                </div>
-                <div className="md:col-span-2 flex flex-col justify-center">
-                  <Badge className="mb-3 w-fit bg-luxury-gold">
-                    {translate(featuredPost.category)}
-                  </Badge>
-                  <h3 className="text-3xl font-bold mb-4">{featuredPost.title}</h3>
-                  <p className="text-gray-600 mb-4">{featuredPost.excerpt}</p>
-                  <div className="flex items-center text-sm text-gray-500 mb-6">
-                    <div className="flex items-center mr-4">
-                      <CalendarDays className="h-4 w-4 mr-1" />
-                      <span>{featuredPost.date}</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Clock className="h-4 w-4 mr-1" />
-                      <span>{featuredPost.readTime}</span>
-                    </div>
-                  </div>
-                  <Link to={`/blog/${featuredPost.id}`}>
-                    <Button variant="default" className="w-fit bg-luxury-gold hover:bg-luxury-gold/90">
-                      {translate("Read Article")}
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </section>
-          )}
-
-          <section>
-            <h2 className="text-2xl font-bold mb-6">{translate("Latest Articles")}</h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {blogPosts.map((post) => (
-                <Card key={post.id} className="overflow-hidden flex flex-col h-full">
-                  <div className="h-48 overflow-hidden">
-                    <img
-                      src={post.imageUrl}
-                      alt={post.title}
-                      className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
-                    />
-                  </div>
-                  <CardHeader>
-                    <div className="flex justify-between items-start mb-2">
-                      <Badge className="bg-luxury-gold">{translate(post.category)}</Badge>
-                      <div className="text-sm text-gray-500">{post.readTime}</div>
-                    </div>
-                    <CardTitle className="text-xl">{post.title}</CardTitle>
-                    <CardDescription className="line-clamp-2">{post.excerpt}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="flex-grow">
-                    <p className="text-sm text-gray-500 flex items-center">
-                      <CalendarDays className="h-3.5 w-3.5 mr-1" /> {post.date}
-                    </p>
-                  </CardContent>
-                  <CardFooter>
-                    <Link to={`/blog/${post.id}`} className="w-full">
-                      <Button variant="outline" className="w-full border-luxury-gold text-luxury-gold hover:bg-luxury-gold/10">
-                        {translate("Read More")}
-                      </Button>
-                    </Link>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
-          </section>
+      {loading ? (
+        <div className="text-center py-20">
+          <LoaderCircle className="h-8 w-8 animate-spin mx-auto text-gray-400" />
+          <p className="mt-4 text-gray-500">{translate("Loading blog posts...")}</p>
         </div>
-      </main>
-      <Footer />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {posts.map((post, idx) => (
+            <Card key={idx} className="overflow-hidden">
+              <img
+                src={post.thumbnail || "/placeholder.webp"}
+                alt={post.title}
+                className="h-48 w-full object-cover"
+              />
+              <CardHeader>
+                <CardTitle className="text-lg font-bold line-clamp-2">{post.title}</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-gray-600 line-clamp-3">
+                {post.description.replace(/<[^>]+>/g, "")}
+              </CardContent>
+              <div className="p-4">
+                <Link
+                  to={"/external?url=" + encodeURIComponent(post.link)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-luxury-gold font-semibold hover:underline"
+                >
+                  {translate("Read more")}
+                </Link>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
