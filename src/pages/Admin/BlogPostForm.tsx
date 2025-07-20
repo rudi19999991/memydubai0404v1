@@ -5,8 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 
 const BlogPostForm = () => {
   const { translate } = useLanguage();
@@ -16,7 +16,7 @@ const BlogPostForm = () => {
   const [excerpt, setExcerpt] = useState('');
   const [content, setContent] = useState('');
   const [category, setCategory] = useState('');
-  const [readTime, setReadTime] = useState('');
+  const [readtime, setReadtime] = useState('');
   const [featured, setFeatured] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -25,7 +25,7 @@ const BlogPostForm = () => {
     e.preventDefault();
     setUploading(true);
 
-    let imageUrl = '';
+    let imageurl = '';
 
     // Upload image if selected
     if (imageFile) {
@@ -44,7 +44,7 @@ const BlogPostForm = () => {
       }
 
       const { data } = supabase.storage.from('blog-images').getPublicUrl(filePath);
-      imageUrl = data?.publicUrl || '';
+      imageurl = data?.publicUrl || '';
     }
 
     // Insert new blog post
@@ -54,9 +54,9 @@ const BlogPostForm = () => {
         excerpt,
         content,
         category,
-        readtime,         // was readTime before
+        readtime,
         featured,
-        imageurl,         // was imageUrl before
+        imageurl,
         date: new Date().toISOString().split('T')[0],
       },
     ]);
@@ -114,8 +114,8 @@ const BlogPostForm = () => {
         <div>
           <Label>{translate('Read Time (e.g. 5 min read)')}</Label>
           <Input
-            value={readTime}
-            onChange={(e) => setReadTime(e.target.value)}
+            value={readtime}
+            onChange={(e) => setReadtime(e.target.value)}
             required
           />
         </div>
@@ -138,7 +138,11 @@ const BlogPostForm = () => {
           />
         </div>
 
-        <Button type="submit" disabled={uploading} className="bg-luxury-gold hover:bg-luxury-gold/90">
+        <Button
+          type="submit"
+          disabled={uploading}
+          className="bg-luxury-gold hover:bg-luxury-gold/90"
+        >
           {uploading ? translate('Uploading...') : translate('Publish')}
         </Button>
       </form>
