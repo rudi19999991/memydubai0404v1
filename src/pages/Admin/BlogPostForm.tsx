@@ -54,9 +54,9 @@ const BlogPostForm = () => {
         excerpt,
         content,
         category,
-        readTime,
+        readtime,         // was readTime before
         featured,
-        imageUrl,
+        imageurl,         // was imageUrl before
         date: new Date().toISOString().split('T')[0],
       },
     ]);
