@@ -18,8 +18,8 @@ interface BlogPost {
   excerpt: string;
   content: string;
   date: string;
-  readTime: string;
-  imageUrl: string;
+  readtime: string;
+  imageurl: string;
   category: string;
   featured: boolean;
 }
