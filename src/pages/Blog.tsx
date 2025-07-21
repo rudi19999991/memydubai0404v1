@@ -28,12 +28,9 @@ const Blog = () => {
         return;
       }
 
-      // Filter: only Dubai/UAE property market blogs
-      const filteredPosts = posts.filter(post =>
-        post.category?.toLowerCase().includes("property") ||
-        post.category?.toLowerCase().includes("dubai") ||
-        post.category?.toLowerCase().includes("uae")
-      );
+      // const filteredPosts = posts.filter(...);
+	const filteredPosts = posts;
+
 
       if (filteredPosts.length > 0) {
         setBlogPosts(filteredPosts);
